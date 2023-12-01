@@ -56,10 +56,10 @@ define([
                 var objExtendItem = {};
 
                 var stPlanCount = objRequest.getLineCount({ group: 'custpage_plans' });
+
                 // objExtendItem.stWarrantyItemId = runtime.getCurrentScript().getParameter({ name: 'custscript_ext_protection_plan' });
                 //var extendConfigRec =
-                objExtendItem.stWarrantyItemId = EXTEND_CONFIG.getConfig(1).product_plan_item;
-                ;
+                objExtendItem.stWarrantyItemId = JSON.parse(objRequest.parameters.custpage_config).product_plan_item;
 
                 //Line Number
                 // var stProductLine = objRequest.parameters.custpage_line_num;
@@ -165,8 +165,10 @@ define([
                 var stItemInternalId = context.request.parameters.itemid;
                 var stItemRefId = context.request.parameters.refid;
                 var stLeadToken = context.request.parameters.leadToken;
+                var config = JSON.parse(context.request.parameters.config);
                 log.debug('stItemRefId', stItemRefId);
                 log.debug('stLeadToken', stLeadToken);
+                log.debug('config ' + typeof config,  config);
 
 
                 // Create the form
@@ -238,6 +240,20 @@ define([
                     objItemQtyField.defaultValue = context.request.parameters.quantity;
 
                 }
+                //Hidden field for config
+                var objConfigField = objForm.addField({
+                    id: 'custpage_config',
+                    type: ui.FieldType.LONGTEXT,
+                    label: 'config'
+                });
+                objConfigField.updateDisplayType({
+                    displayType: ui.FieldDisplayType.HIDDEN
+                });
+                if (context.request.parameters.config) {
+                    objConfigField.defaultValue = context.request.parameters.config;
+
+                }
+
                 //Telesales Script Group
                 var objScriptGroup = objForm.addFieldGroup({
                     id: 'custpage_script',
@@ -360,14 +376,9 @@ define([
                 if (stItemRefId || stLeadToken) {
                     try {
                         if(stLeadToken){
-
-                            var config = EXTEND_CONFIG.getConfig(1);
-
                             var objResponse = EXTEND_API.getLeadOffers(stLeadToken, config);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
                         }else{
-                            var config = EXTEND_CONFIG.getConfig(1);
-
                             var objResponse = EXTEND_API.getOffers(stItemRefId, config);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
                         }
@@ -418,7 +429,7 @@ define([
                 //Write Page
                 context.response.writePage(objForm);
             } catch (e) {
-
+                log.error('error in write page', e);
             }
         };
         return exports;

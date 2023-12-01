@@ -138,7 +138,7 @@ define([
             arrItemList = JSON.stringify(arrItemList);
             console.log('arrItemList', arrItemList);
 
-            _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, intQty, stItemRefId);
+            _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, intQty, stItemRefId, JSON.stringify(config));
 
             return true;
         }
@@ -237,7 +237,7 @@ define([
             _callSuitelet(stArrayItemList, arrItemList[0].id, arrItemList[0].name, arrItemList[0].line, arrItemList[0].qty, arrItemList[0].refId);
         }
 
-        function _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, stItemQty, stItemRefId) {
+        function _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, stItemQty, stItemRefId, config) {
             //Resolve suitelet URL
             var slUrl = url.resolveScript({
                 scriptId: 'customscript_ext_offer_presentation_sl',
@@ -248,7 +248,8 @@ define([
                     'arrItemid': arrItemList,
                     'line': stLineNum,
                     'quantity': stItemQty,
-                    'refid': stItemRefId
+                    'refid': stItemRefId,
+                    'config' : config
                 }
             });
             //Call the pop up suitelet
