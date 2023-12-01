@@ -25,8 +25,14 @@ define([
                     var SHIPPING_ITEM;
                     var DOMAIN = 'https://api-demo.helloextend.com';
 
-
-                    var stExtendConfigRecId = runtime.getCurrentScript().getParameter('custscript_ext_config_rec');
+                    // VF need to account for calling from Client and MR Scripts
+                    var currScript=  runtime.getCurrentScript();
+                    var stExtendConfigRecId
+                    if(currScript.id == "customscript_ext_so_offer_controller_cs" ){
+                            stExtendConfigRecId = currScript.getParameter('custscript_ext_config_rec_cs');
+                    }else{
+                            stExtendConfigRecId = currScript.getParameter('custscript_ext_config_rec');
+                    }
                     log.debug('_getConfig: stExtendConfigRecId ', stExtendConfigRecId);
 
                     var arrFilters = ["internalId", "is", stExtendConfigRecId];

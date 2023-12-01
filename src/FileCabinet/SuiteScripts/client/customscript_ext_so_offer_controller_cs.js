@@ -18,9 +18,10 @@ define([
         'N/search',
         'N/currentRecord',
         '../lib/customscript_ext_util',
-        '../lib/customscript_ext_config_lib'
+        '../lib/customscript_ext_config_lib',
+        '../lib/customscript_ext_api_lib'
     ],
-    function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG) {
+    function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEND_API) {
         var exports = {};
         exports.pageInit = function () {
 
@@ -68,20 +69,7 @@ define([
             }
 
             // Lookup to item to see if it is eligible for warranty offers
-            var arrItemLookupField = search.lookupFields({
-                type: 'item',
-                id: stItemId,
-                columns: 'custitem_ext_is_warrantable'
-            });
-            var bIsWarranty = arrItemLookupField.custitem_ext_is_warrantable;
-
-            log.debug('Is warranty', typeof (bIsWarranty) + ', ' + bIsWarranty);
-            // If item is not a warranty item, return
-            if (!bIsWarranty) {
-                return true;
-            }
-
-            var stItemRefId = stItemId;
+            // VF 12/1/23 removing warranty check as boolean, changing to getOffers call
             var stLineNum = objCurrentRecord.getCurrentSublistIndex({
                 sublistId: context.sublistId
             });
@@ -119,7 +107,24 @@ define([
                     break;
                 }
             }
+            //call offers endpoint to see if product is warrantable
+            var objResponse = EXTEND_API.getOffers(stItemRefId, config);
+            var arrPlans = [];
+            if (objResponse.code == 200) {
+                var objResponseBody = JSON.parse(objResponse.body);
+                log.debug('CS Check Warranty: Offers JSON Response', objResponseBody);
 
+                var arrPlans = objResponseBody.plans.adh;
+                log.debug('CS Check Warranty: arrPlans', arrPlans);
+                if (!arrPlans) {
+                    arrPlans = objResponseBody.plans.base;
+                }
+                log.debug('arrPlans', arrPlans);
+            }
+            //if no plans, product is assumed not warrantable
+            if(arrPlans.length == 0){
+                return true;
+            }
 
             var objItem = {};
             objItem.id = stItemId;
