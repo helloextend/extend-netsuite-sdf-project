@@ -541,6 +541,7 @@ define([
             exports.getItemRefId = function (stItemId, objExtendConfig) {
                     //          var config = EXTEND_CONFIG.getConfig();
                     var refIdValue = objExtendConfig.refId;
+                    log.debug('refIdValue ', refIdValue);
                     var stItemRefId = stItemId;
                     if (refIdValue) {
                             // Lookup to item to see if it is eligible for warranty offers
@@ -550,8 +551,16 @@ define([
                                     columns: refIdValue
                             });
                             for (var prop in arrItemLookup) {
-                                    //var stItemRefId = arrItemLookup[prop]
-                                    var stItemRefId = arrItemLookup[prop][0].text;
+                                    var stItemRefId = arrItemLookup[prop];
+                                    if (!stItemRefId) {
+                                            var stItemRefId = arrItemLookup[prop][0].text;
+                                    }
+                                    var arrItemRefId = stItemRefId.split(": ");
+                                    if (arrItemRefId.length > 1) {
+                                            stItemRefId = arrItemRefId[1]
+                                            console.log('stItemRefId', stItemRefId)
+
+                                    }
                                     break;
                             }
                     }
