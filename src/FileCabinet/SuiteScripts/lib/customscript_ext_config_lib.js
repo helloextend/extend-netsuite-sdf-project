@@ -30,6 +30,8 @@ define([
                     var stExtendConfigRecId
                     if(currScript.id == "customscript_ext_so_offer_controller_cs" ){
                             stExtendConfigRecId = currScript.getParameter('custscript_ext_config_rec_cs');
+                    }else if(currScript.id == "customscript_ext_refund_create_mr" ){
+                            stExtendConfigRecId = currScript.getParameter('custscript_ext_config_record');
                     }else{
                             stExtendConfigRecId = currScript.getParameter('custscript_ext_config_rec');
                     }
