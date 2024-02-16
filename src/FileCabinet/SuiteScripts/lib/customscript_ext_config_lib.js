@@ -12,7 +12,7 @@ define([
                     SANDBOX: 1,
                     PRODUCTION: 2
             }
-            exports.getConfig = function () {
+            exports.getConfig = function (stExtendConfigRecId) {
                     //Get storeId & APIkey from config custom record
 
                     var STORE_ID;
@@ -25,20 +25,15 @@ define([
                     var SHIPPING_ITEM;
                     var DOMAIN = 'https://api-demo.helloextend.com';
 
-                    // VF need to account for calling from Client and MR Scripts
-                    var currScript=  runtime.getCurrentScript();
-                    var stExtendConfigRecId
-                    if(currScript.id == "customscript_ext_so_offer_controller_cs" ){
-                            stExtendConfigRecId = currScript.getParameter('custscript_ext_config_rec_cs');
-                    }else if(currScript.id == "customscript_ext_refund_create_mr" ){
-                            stExtendConfigRecId = currScript.getParameter('custscript_ext_config_record');
-                    }else{
-                            stExtendConfigRecId = currScript.getParameter('custscript_ext_config_rec');
+                    if(!stExtendConfigRecId){
+                        stExtendConfigRecId = runtime.getCurrentScript().getParameter('custscript_ext_configuration_record');
+                        log.audit('stExtendConfigRecId', stExtendConfigRecId);
                     }
+                    var arrFilters = [];
                     log.debug('_getConfig: stExtendConfigRecId ', stExtendConfigRecId);
-
-                    var arrFilters = ["internalId", "is", stExtendConfigRecId];
-
+                    if(stExtendConfigRecId){
+                        arrFilters.push(["internalId", "is", stExtendConfigRecId]);
+                    }
                     var customrecord_ext_configurationSearchObj = search.create({
                             type: "customrecord_ext_configuration",
                             filters: [
@@ -72,7 +67,6 @@ define([
                                     default:
                                             DOMAIN = 'https://api-demo.helloextend.com'
                             };
-                            log.debug('_getConfig: DOMAIN ', DOMAIN);
                             STORE_ID = result.getValue({ name: 'custrecord_ext_store_id' });
                             API_KEY = result.getValue({ name: 'custrecord_ext_api_key' });
                             EMAIL = result.getValue({ name: 'custrecord_ext_demo_email' });
