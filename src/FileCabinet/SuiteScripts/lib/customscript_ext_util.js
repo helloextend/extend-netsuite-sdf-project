@@ -365,10 +365,44 @@ define([
                                     objExtendItemData[stUniqueKey].itemId = stItemId
                                     objExtendItemData[stUniqueKey].line = i;
                                     objExtendItemData[stUniqueKey].purchase_price = parseInt(objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'rate', line: i }) * 100);
+                                    objExtendItemData[stUniqueKey].list_price = parseInt(objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'rate', line: i }) * 100);
+                                    objExtendItemData[stUniqueKey].title = objSalesOrderRecord.getSublistText({ sublistId: 'item', fieldId: 'item', line: i });
+                                   var arrLookupResults = [];
+                                    try{
+                                       var arrLookupResults = search.lookupFields({
+                                                type: 'item',
+                                                id: stItemId,
+                                                columns: 'category'
+                                        });
+                                if(arrLookupResults){
+                                        for (var prop in arrLookupResults) {
+                                                var stCategory = arrLookupResults[prop];
+                                                log.debug('object stCategory', stCategory);
+                                                if (!exports.objectIsEmpty(stCategory)) {
+                                                        log.debug('object arrLookupResults[prop][0]', arrLookupResults[prop][0]);
+                                                        if(!exports.objectIsEmpty(arrLookupResults[prop][0])){
+                                                                stCategory = arrLookupResults[prop][0].text;
+                                                        }
+                                                }
+                                                if(exports.stringIsEmpty(stCategory)){
+                                                        objExtendItemData[stUniqueKey].category = 'placeholder';
+                                                }else{
+                                                        objExtendItemData[stUniqueKey].category = stCategory;
+                                                }
+                                        }
+
+                                }
+                                   }catch(e){
+
+                                        objExtendItemData[stUniqueKey].category = 'placeholder';
+                                        log.debug('object objExtendItemData[stUniqueKey].category', objExtendItemData[stUniqueKey].category);
+
+                                   }
                                     objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;
                                     if (objExtendItemData[stUniqueKey].extend_line) {
                                             objExtendItemData[stUniqueKey].lineItemID = objExtendItemData[stUniqueKey].lineItemID + "-" + objExtendItemData[stUniqueKey].extend_line;
                                     }
+                                    log.debug('object', objExtendItemData[stUniqueKey] );
                             }
 
                     }
@@ -407,7 +441,10 @@ define([
                                             'product': {
                                                     'id': objValues[key].refId,
                                                     // 'serialNumber': objValues.serial_number,
-                                                    'purchasePrice': objValues[key].purchase_price
+                                                    'category': objValues[key].category,
+                                                    'title': objValues[key].title,
+                                                    'purchasePrice': objValues[key].purchase_price,
+                                                    'listPrice': objValues[key].list_price
                                             },
                                             'quantity': objValues[key].quantity,
                                             'fulfilledQuantity': objValues[key].fulfilledQuantity,
@@ -553,8 +590,13 @@ define([
                             for (var prop in arrItemLookup) {
                                     var stItemRefId = arrItemLookup[prop];
                                     if (!stItemRefId) {
-                                            var stItemRefId = arrItemLookup[prop][0].text;
+                                        if(arrItemLookup[prop][0]){
+                                                var stItemRefId = arrItemLookup[prop][0].text;
+                                        }
                                     }
+                                    if (!stItemRefId) {
+                                        var stItemRefId = 'placeholder'    
+                                }
                                     var arrItemRefId = stItemRefId.split(": ");
                                     if (arrItemRefId.length > 1) {
                                             stItemRefId = arrItemRefId[1]
