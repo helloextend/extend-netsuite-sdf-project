@@ -229,10 +229,10 @@ define([
                                     var arrContractIds = JSON.parse(stContractIds);
                                     objExtendResponseData[key].contractIds.concat(arrContractIds);
                             }
-                            if (stLeadTokens) {
+                          /*  if (stLeadTokens) {
                                     var arrLeadTokens = JSON.parse(stLeadTokens);
                                     objExtendResponseData[key].leadTokens.concat(arrLeadTokens);
-                            }
+                            }*/
 
                             log.debug('EXTEND UTIL _createExtendOrder: newContractIds | stLeadTokens: ', objExtendResponseData[key].contractIds + '|' + objExtendResponseData[key].leadTokens + typeof objExtendResponseData[key].leadTokens);
 
@@ -318,6 +318,8 @@ define([
 
                                     //if extend line has lead token mark isLead = T
                                     if (stLeadToken) {
+                                            log.debug('_getExtendData: stLeadToken ', stLeadToken);
+                                            stLeadToken = stLeadToken.replace(/\"/g, '');
                                             log.debug('_getExtendData: stLeadToken ', stLeadToken);
                                             objExtendItemData[stUniqueKey] = {};
                                             objExtendItemData[stUniqueKey].isLead = true;
