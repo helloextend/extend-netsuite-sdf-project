@@ -46,8 +46,9 @@ define([
 
             console.log('Handling Input', context);
             // console.log('Sublist', context.currentRecord.getCurrentSublistValue({ sublistId: context.sublistId }));
+            var stExtendConfigRecId = runtime.getCurrentScript().getParameter('custscript_ext_config_rec_cs');
             console.log('config', 'getting.....');
-            var config = EXTEND_CONFIG.getConfig(1);
+            var config = EXTEND_CONFIG.getConfig(stExtendConfigRecId);
             console.log('config', config);
 
             var refIdValue = config.refId;
@@ -138,7 +139,7 @@ define([
             arrItemList = JSON.stringify(arrItemList);
             console.log('arrItemList', arrItemList);
 
-            _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, intQty, stItemRefId, JSON.stringify(config));
+            _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, intQty, stItemRefId, stExtendConfigRecId);
 
             return true;
         }
@@ -155,7 +156,8 @@ define([
             });
             console.log('linecount', linecount);
             console.log('config', 'getting.....');
-            var config = EXTEND_CONFIG.getConfig(1);
+            var stExtendConfigRecId = runtime.getCurrentScript().getParameter('custscript_ext_config_rec_cs');
+            var config = EXTEND_CONFIG.getConfig(stExtendConfigRecId);
             console.log('config', config);
 
             var refIdValue = config.refId;
@@ -183,14 +185,15 @@ define([
                     line: i
                 });
                 // Lookup to item to see if it is eligible for warranty offers
+                /*
                 var arrItemLookupField = search.lookupFields({
                     type: 'item',
                     id: stItemId,
                     columns: 'custitem_product_protection_item'
                 });
-                var bIsWarranty = arrItemLookupField.custitem_ext_is_warrantable;
-
-                log.debug('Is warranty', typeof(bIsWarranty) + ', ' + bIsWarranty);
+               // var bIsWarranty = arrItemLookupField.custitem_ext_is_warrantable;
+*/
+              //  log.debug('Is warranty', typeof(bIsWarranty) + ', ' + bIsWarranty);
                 if (refIdValue) {
                     // Lookup to item to see if it is eligible for warranty offers
                     var arrItemLookup = search.lookupFields({
@@ -228,16 +231,17 @@ define([
                 //console.log('objItem', objItem);
                 //push to array
                 // If item is not a warranty item, return
-                if (stExtendItem != stItemId || !bIsWarranty) {
+                if (stExtendItem != stItemId) {
                     arrItemList.push(objItem);
                 }
             }
             var stArrayItemList = JSON.stringify(arrItemList);
             console.log('stArrayItemList', stArrayItemList);
-            _callSuitelet(stArrayItemList, arrItemList[0].id, arrItemList[0].name, arrItemList[0].line, arrItemList[0].qty, arrItemList[0].refId);
+            _callSuitelet(stArrayItemList, arrItemList[0].id, arrItemList[0].name, arrItemList[0].line, arrItemList[0].qty, arrItemList[0].refId, stExtendConfigRecId);
         }
 
         function _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, stItemQty, stItemRefId, config) {
+            console.log('config', config);
             //Resolve suitelet URL
             var slUrl = url.resolveScript({
                 scriptId: 'customscript_ext_offer_presentation_sl',
@@ -249,9 +253,11 @@ define([
                     'line': stLineNum,
                     'quantity': stItemQty,
                     'refid': stItemRefId,
-                    'config' : config
+                    'config' : config,
+                   // 'leadToken': stLeadToken
                 }
             });
+            console.log('slUrl', slUrl);
             //Call the pop up suitelet
             window.open(slUrl, '_blank', 'screenX=300,screenY=300,width=900,height=500,titlebar=0,status=no,menubar=no,resizable=0,scrollbars=0');
 

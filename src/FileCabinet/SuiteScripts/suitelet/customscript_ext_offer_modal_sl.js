@@ -165,10 +165,11 @@ define([
                 var stItemInternalId = context.request.parameters.itemid;
                 var stItemRefId = context.request.parameters.refid;
                 var stLeadToken = context.request.parameters.leadToken;
-                var config = JSON.parse(context.request.parameters.config);
+                var stConfigRec = JSON.parse(context.request.parameters.config);
+                var objConfig = EXTEND_CONFIG.getConfig(stConfigRec);
                 log.debug('stItemRefId', stItemRefId);
                 log.debug('stLeadToken', stLeadToken);
-                log.debug('config ' + typeof config,  config);
+                log.debug('objConfig ' + typeof objConfig,  objConfig);
 
 
                 // Create the form
@@ -376,10 +377,10 @@ define([
                 if (stItemRefId || stLeadToken) {
                     try {
                         if(stLeadToken){
-                            var objResponse = EXTEND_API.getLeadOffers(stLeadToken, config);
+                            var objResponse = EXTEND_API.getLeadOffers(stLeadToken, objConfig);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
                         }else{
-                            var objResponse = EXTEND_API.getOffers(stItemRefId, config);
+                            var objResponse = EXTEND_API.getOffers(stItemRefId, objConfig);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
                         }
 
@@ -392,8 +393,11 @@ define([
                             log.debug('OFFER MODAL SUITELET: arrPlans', arrPlans);
                             if (!arrPlans) {
                                 var arrPlans = objResponseBody.plans.base;
+                                if(!arrPlans){
+                                    ///show alert no plans for item
+                                }
                             }
-
+                            
                             //Populate Sublist Values
                             for (var i = 0; i < arrPlans.length; i++) {
                                 objPlanList.setSublistValue({
