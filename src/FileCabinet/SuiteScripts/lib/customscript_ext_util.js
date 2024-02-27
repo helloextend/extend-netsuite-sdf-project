@@ -466,6 +466,11 @@ define([
 
                                     }
                             },
+                            'saleOrigin': {
+                                'integratorId': 'NetSuite',
+                                'channel': 'NetSuite',
+                                'platform': 'NetSuite'
+                            },
                             'storeId': objExtendConfig.storeId,
                             'lineItems': objValues.lineItems,
                             'total': parseInt(objValues.total_amount * 100),
