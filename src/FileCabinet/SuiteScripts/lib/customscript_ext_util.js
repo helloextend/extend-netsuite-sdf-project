@@ -543,6 +543,7 @@ define([
                     return objAddress;
             };
             //get Item's reference ID
+            
             exports.getItemRefId = function (stItemId, objExtendConfig) {
                     //          var config = EXTEND_CONFIG.getConfig();
                     var refIdValue = objExtendConfig.refId;

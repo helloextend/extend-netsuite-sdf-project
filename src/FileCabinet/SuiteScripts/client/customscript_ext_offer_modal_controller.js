@@ -89,9 +89,12 @@ define(['N/url',
             console.log('stItemId', stItemId);
             var stItemName = objCurrentRec.getText({ fieldId: 'custpage_item_select' });
             var stItemList = objCurrentRec.getValue({ fieldId: 'custpage_item_list' });
+            var stConfigRec = objCurrentRec.getValue({ fieldId: 'custpage_config' });
+            var stLeadToken = objCurrentRec.getValue({ fieldId: 'custpage_lead_input' });
             var stItemQty;
             var stLineNum;
             var stItemRefId;
+
 
             if (!EXTEND_UTIL.objectIsEmpty(stItemId)) {
                 var arrItemList = JSON.parse(stItemList);
@@ -111,7 +114,9 @@ define(['N/url',
                     'arrItemid': stItemList,
                     'line': stLineNum,
                     'quantity': stItemQty,
-                    'refid': stItemRefId
+                    'refid': stItemRefId,
+                    'config': stConfigRec,
+                    'leadToken': stLeadToken
                 }
             });
 
