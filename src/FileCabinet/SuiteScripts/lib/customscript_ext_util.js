@@ -314,13 +314,9 @@ define([
                                     log.debug('_getExtendData: Item Found | Line ', stItemId + ' | ' + i);
                                     //get value of leadtoken column on extend line
                                     var stLeadToken = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_lead_token', line: i });
-                                    log.debug('_getExtendData: stLeadToken', stLeadToken + '|' + typeof stLeadToken);
-
                                     //if extend line has lead token mark isLead = T
                                     if (stLeadToken) {
-                                            log.debug('_getExtendData: stLeadToken ', stLeadToken);
-                                            stLeadToken = stLeadToken.replace(/\"/g, '');
-                                            log.debug('_getExtendData: stLeadToken ', stLeadToken);
+                                            stLeadToken = stLeadToken.replace(/[^\w\-_]/g, '');
                                             objExtendItemData[stUniqueKey] = {};
                                             objExtendItemData[stUniqueKey].isLead = true;
                                             objExtendItemData[stUniqueKey].leadToken = stLeadToken;
