@@ -308,7 +308,9 @@ define([
                                     objExtendItemData[stUniqueKey].quoteId = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_quote_id', line: i });
                                     //set Extend Line Item Transaction ID on Extend Line
                                     objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;
-                                    objExtendItemData[stUniqueKey].shipmentInfo = objSalesOrderRecord.getValue({ fieldId: 'linkedtrackingnumbers' });
+                                    objExtendItemData[stUniqueKey].trackingId = objSalesOrderRecord.getValue({ fieldId: 'linkedtrackingnumbers' });
+                                    objExtendItemData[stUniqueKey].carrier = objSalesOrderRecord.getValue({ fieldId: 'shipcarrier' });
+                                    objExtendItemData[stUniqueKey].destAddress = exports.getAddress(objSalesOrderRecord, 'shipaddress');                                    
                             }
                             if (stExtendProductItemId === stItemId) {
                                     log.debug('_getExtendData: Item Found | Line ', stItemId + ' | ' + i);
@@ -392,9 +394,9 @@ define([
                                     }
                             } else if (objValues[key].isShipping) {
                                     var item = {
-                                            "quoteId": objValues[key].quoteId,
+                                            'quoteId': objValues[key].quoteId,
                                             'lineItemTransactionId': objValues[key].lineItemID,
-                                            "shipmentInfo": objValues[key].shipmentInfo
+                                            'shipmentInfo': objValues[key].shipmentInfo
                                     }
                             }
                             else {
