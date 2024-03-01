@@ -307,10 +307,7 @@ define([
                                     // Start building the Extend Order Plan Info Object
                                     objExtendItemData[stUniqueKey].quoteId = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_quote_id', line: i });
                                     //set Extend Line Item Transaction ID on Extend Line
-                                    objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;
-                                    objExtendItemData[stUniqueKey].trackingId = objSalesOrderRecord.getValue({ fieldId: 'linkedtrackingnumbers' });
-                                    objExtendItemData[stUniqueKey].carrier = objSalesOrderRecord.getValue({ fieldId: 'shipcarrier' });
-                                    objExtendItemData[stUniqueKey].destAddress = exports.getAddress(objSalesOrderRecord, 'shipaddress');                                    
+                                    objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;                                 
                             }
                             if (stExtendProductItemId === stItemId) {
                                     log.debug('_getExtendData: Item Found | Line ', stItemId + ' | ' + i);
@@ -465,11 +462,6 @@ define([
                                             'province': objValues.ship_state
 
                                     }
-                            },
-                            'saleOrigin': {
-                                'integratorId': 'NetSuite',
-                                'channel': 'NetSuite',
-                                'platform': 'NetSuite'
                             },
                             'storeId': objExtendConfig.storeId,
                             'lineItems': objValues.lineItems,
