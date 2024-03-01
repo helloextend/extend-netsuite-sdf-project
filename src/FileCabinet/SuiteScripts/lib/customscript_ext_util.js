@@ -308,7 +308,9 @@ define([
                                     objExtendItemData[stUniqueKey].quoteId = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_quote_id', line: i });
                                     //set Extend Line Item Transaction ID on Extend Line
                                     objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;
-                                    objExtendItemData[stUniqueKey].shipmentInfo = exports.getShipmentIfo();                                
+                                    objExtendItemData[stUniqueKey].trackingId = objSalesOrderRecord.getValue({ fieldId: 'linkedtrackingnumbers' });
+                                    objExtendItemData[stUniqueKey].carrier = objSalesOrderRecord.getValue({ fieldId: 'shipcarrier' });
+                                    objExtendItemData[stUniqueKey].destAddress = exports.getAddress(objSalesOrderRecord, 'shipaddress');                                    
                             }
                             if (stExtendProductItemId === stItemId) {
                                     log.debug('_getExtendData: Item Found | Line ', stItemId + ' | ' + i);
@@ -481,13 +483,12 @@ define([
             };
             // Build the Extend API JSON for shipment info
             exports.buildExtendShipmentJSON = function (objValues) {
-                log.debug('_buildExtendShipmentJSON', objValues)
                     var shipmentInfo = [];
                     for (key in objValues) {
                             var objJSON = {
                                     'lineItemTransactionId': objValues[key].lineItemID,
                                     'productIds': objValues[key].prodcutIds,
-                                    'shipmentDate': objValues[key].shipDate,
+                                    'shipmentDate': objValues[key].lineItemID,
                                     'shippingProvider': objValues[key].carrier,
                                     'trackingId': objValues[key].trackingId,
                                     'trackingUrl': objValues[key].trackingUrl,
@@ -514,39 +515,6 @@ define([
                     return shipmentInfo;
             };
             /***********************************Support Functions********************************************/
-            exports.getShipmentIfo = function (){
-                var itemfulfillmentSearchObj = search.create({
-                        type: "itemfulfillment",
-                        filters:
-                        [
-                           ["type","anyof","ItemShip"], 
-                           "AND", 
-                           ["createdfrom","anyof","257593"], 
-                           "AND", 
-                           ["taxline","is","F"], 
-                           "AND", 
-                           ["mainline","is","T"]
-                        ],
-                        columns:
-                        [
-                           search.createColumn({name: "shipdate", label: "Ship Date"}),
-                           search.createColumn({name: "trackingnumbers", label: "Tracking Numbers"}),
-                           search.createColumn({name: "shipaddress", label: "Shipping Address"}),
-                           search.createColumn({name: "item", label: "Item"}),
-                           search.createColumn({name: "shipcarrier", label: "Shipping Carrier"})
-                        ]
-                     });
-                     var searchResultCount = itemfulfillmentSearchObj.runPaged().count;
-                     log.debug("itemfulfillmentSearchObj result count",searchResultCount);
-                     itemfulfillmentSearchObj.run().each(function(result){
-                        // .run().each has a limit of 4,000 results
-                        return true;
-                     });
-                     objExtendItemData[stUniqueKey].trackingId = objSalesOrderRecord.getValue({ fieldId: 'linkedtrackingnumbers' });
-                     objExtendItemData[stUniqueKey].carrier = objSalesOrderRecord.getValue({ fieldId: 'shipcarrier' });
-                     objExtendItemData[stUniqueKey].shipDate = objSalesOrderRecord.getValue({ fieldId: 'shipdate' });
-                     objExtendItemData[stUniqueKey].destAddress = exports.getAddress(objSalesOrderRecord, 'shippingaddress');    
-            };
             //get Address Subrecord fields from transaction
             exports.getAddress = function (objSalesOrderRecord, addressField) {
                     var address = objSalesOrderRecord.getSubrecord({
