@@ -496,15 +496,20 @@ define([
                                                 'countryCode': objValues.ship_country,
                                                 'province': objValues.ship_state
 
-                                        }
-                                },
-                                'storeId': objExtendConfig.storeId,
-                                'lineItems': objValues.lineItems,
-                                'total': parseInt(objValues.total_amount * 100),
-                                'shippingCostTotal': parseInt(objValues.shipping_total_amount * 100),
-                                'taxCostTotal': parseInt(objValues.tax_total_amount * 100),
-                                'transactionId': objValues.id,
-                        }
+                                    }
+                            },
+                            'saleOrigin': {
+                                'integratorId': 'NetSuite',
+                                'channel': 'NetSuite',
+                                'platform': 'NetSuite'
+                            },
+                            'storeId': objExtendConfig.storeId,
+                            'lineItems': objValues.lineItems,
+                            'total': parseInt(objValues.total_amount * 100),
+                            'shippingCostTotal': parseInt(objValues.shipping_total_amount * 100),
+                            'taxCostTotal': parseInt(objValues.tax_total_amount * 100),
+                            'transactionId': objValues.id,
+                    }
 
                         return objJSON;
                 };
