@@ -280,7 +280,7 @@ define([
                         var objShipAddress = exports.getAddress(objSalesOrderRecord, 'shippingaddress');
                         var objBillAddress = exports.getAddress(objSalesOrderRecord, 'billingaddress');
                         //Build SO Info Object
-                        objExtendData.id = objSalesOrderRecord.id + objSalesOrderRecord.getValue({ fieldId: 'tranid' });
+                        objExtendData.id = objSalesOrderRecord.getValue({ fieldId: 'tranid' }) + '-' + objSalesOrderRecord.id;
                         objExtendData.tran_date = exports.getepochDate();
                         objExtendData.currency = 'USD';
                         objExtendData.order_number = objSalesOrderRecord.getValue({ fieldId: 'tranid' });
