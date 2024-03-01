@@ -379,7 +379,7 @@ define([
                             var objResponse = EXTEND_API.getLeadOffers(stLeadToken, config);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
                         }else{
-                            var objResponse = EXTEND_API.getOffers(stItemRefId, config);
+                            var objResponse = EXTEND_API.getOffers(stItemRefId, stItemCategory, stItemPrice, config);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
                         }
 

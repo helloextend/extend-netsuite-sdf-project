@@ -391,37 +391,8 @@ define([
                                         objExtendItemData[stUniqueKey].purchase_price = parseInt(objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'rate', line: i }) * 100);
                                         objExtendItemData[stUniqueKey].list_price = parseInt(objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'rate', line: i }) * 100);
                                         objExtendItemData[stUniqueKey].title = objSalesOrderRecord.getSublistText({ sublistId: 'item', fieldId: 'item', line: i });
-                                        var arrLookupResults = [];
-                                        try {
-                                                var arrLookupResults = search.lookupFields({
-                                                        type: 'item',
-                                                        id: stItemId,
-                                                        columns: 'category'
-                                                });
-                                                if (arrLookupResults) {
-                                                        for (var prop in arrLookupResults) {
-                                                                var stCategory = arrLookupResults[prop];
-                                                                log.debug('object stCategory', stCategory);
-                                                                if (!exports.objectIsEmpty(stCategory)) {
-                                                                        log.debug('object arrLookupResults[prop][0]', arrLookupResults[prop][0]);
-                                                                        if (!exports.objectIsEmpty(arrLookupResults[prop][0])) {
-                                                                                stCategory = arrLookupResults[prop][0].text;
-                                                                        }
-                                                                }
-                                                                if (exports.stringIsEmpty(stCategory)) {
-                                                                        objExtendItemData[stUniqueKey].category = 'placeholder';
-                                                                } else {
-                                                                        objExtendItemData[stUniqueKey].category = stCategory;
-                                                                }
-                                                        }
-
-                                                }
-                                        } catch (e) {
-
-                                                objExtendItemData[stUniqueKey].category = 'placeholder';
-                                                log.debug('object objExtendItemData[stUniqueKey].category', objExtendItemData[stUniqueKey].category);
-
-                                        }
+                                        objExtendItemData[stUniqueKey].category = exports.getItemCategory(stItemId, objExtendConfig);
+                                        log.debug('object objExtendItemData[stUniqueKey].category', objExtendItemData[stUniqueKey].category);
                                         objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;
                                         if (objExtendItemData[stUniqueKey].extend_line) {
                                                 objExtendItemData[stUniqueKey].lineItemID = objExtendItemData[stUniqueKey].lineItemID + "-" + objExtendItemData[stUniqueKey].extend_line;
@@ -631,6 +602,42 @@ define([
                         }
 
                         return stItemRefId;
+                };
+
+                //get Item's category ID
+                exports.getItemCategory = function (stItemId, objExtendConfig) {
+                        var stCategoryFieldID = objExtendConfig.category;
+                        log.debug('stCategoryFieldID', stCategoryFieldID);
+                        if (!stCategoryFieldID) {
+                                stCategoryFieldID = 'category'; //or class?
+                        }
+                        try {
+                                var arrLookupResults = search.lookupFields({
+                                        type: 'item',
+                                        id: stItemId,
+                                        columns: stCategoryFieldID
+                                });
+                                if (arrLookupResults) {
+                                        for (var prop in arrLookupResults) {
+                                                var stItemCategory = arrLookupResults[prop];
+                                                log.debug('object stCategory', stItemCategory);
+                                                if (!exports.objectIsEmpty(stItemCategory)) {
+                                                        log.debug('object arrLookupResults[prop][0]', arrLookupResults[prop][0]);
+                                                        if (!exports.objectIsEmpty(arrLookupResults[prop][0])) {
+                                                                stItemCategory = arrLookupResults[prop][0].text;
+                                                        }
+                                                }
+                                                if (exports.stringIsEmpty(stItemCategory)) {
+                                                        stItemCategory = 'placeholder';
+                                                }
+                                        }
+
+                                }
+                        } catch (e) {
+                                stItemCategory = 'placeholder';
+                        }
+
+                        return stItemCategory;
                 };
                 //get Transaction Date required for contract create
                 exports.getTransactionDate = function (stDate) {
