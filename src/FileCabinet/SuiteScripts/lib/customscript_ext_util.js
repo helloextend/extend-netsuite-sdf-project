@@ -229,10 +229,10 @@ define([
                                     var arrContractIds = JSON.parse(stContractIds);
                                     objExtendResponseData[key].contractIds.concat(arrContractIds);
                             }
-                            if (stLeadTokens) {
+                          /*  if (stLeadTokens) {
                                     var arrLeadTokens = JSON.parse(stLeadTokens);
                                     objExtendResponseData[key].leadTokens.concat(arrLeadTokens);
-                            }
+                            }*/
 
                             log.debug('EXTEND UTIL _createExtendOrder: newContractIds | stLeadTokens: ', objExtendResponseData[key].contractIds + '|' + objExtendResponseData[key].leadTokens + typeof objExtendResponseData[key].leadTokens);
 
@@ -307,18 +307,15 @@ define([
                                     // Start building the Extend Order Plan Info Object
                                     objExtendItemData[stUniqueKey].quoteId = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_quote_id', line: i });
                                     //set Extend Line Item Transaction ID on Extend Line
-                                    objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;
-                                    objExtendItemData[stUniqueKey].shipmentInfo = objSalesOrderRecord.getValue({ fieldId: 'linkedtrackingnumbers' });
+                                    objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;                                 
                             }
                             if (stExtendProductItemId === stItemId) {
                                     log.debug('_getExtendData: Item Found | Line ', stItemId + ' | ' + i);
                                     //get value of leadtoken column on extend line
                                     var stLeadToken = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_lead_token', line: i });
-                                    log.debug('_getExtendData: stLeadToken', stLeadToken + '|' + typeof stLeadToken);
-
                                     //if extend line has lead token mark isLead = T
                                     if (stLeadToken) {
-                                            log.debug('_getExtendData: stLeadToken ', stLeadToken);
+                                            stLeadToken = stLeadToken.replace(/[^\w\-_]/g, '');
                                             objExtendItemData[stUniqueKey] = {};
                                             objExtendItemData[stUniqueKey].isLead = true;
                                             objExtendItemData[stUniqueKey].leadToken = stLeadToken;
@@ -394,9 +391,9 @@ define([
                                     }
                             } else if (objValues[key].isShipping) {
                                     var item = {
-                                            "quoteId": objValues[key].quoteId,
+                                            'quoteId': objValues[key].quoteId,
                                             'lineItemTransactionId': objValues[key].lineItemID,
-                                            "shipmentInfo": objValues[key].shipmentInfo
+                                            'shipmentInfo': objValues[key].shipmentInfo
                                     }
                             }
                             else {
@@ -465,11 +462,6 @@ define([
                                             'province': objValues.ship_state
 
                                     }
-                            },
-                            'saleOrigin': {
-                                'integratorId': 'NetSuite',
-                                'channel': 'NetSuite',
-                                'platform': 'NetSuite'
                             },
                             'storeId': objExtendConfig.storeId,
                             'lineItems': objValues.lineItems,
