@@ -357,33 +357,15 @@ function (ui, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG) {
              * POPULATE SUBLIST
              */
 
-
-            if (stItemRefId || stLeadToken) {
                 try {
-                    if(stLeadToken){
-                        var objResponse = EXTEND_API.getLeadOffers(stLeadToken, objConfig);
+                        var objResponse = EXTEND_API.getSPOffers(objCart, objConfig);
                         log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
-                    }else{
-                        var objResponse = EXTEND_API.getOffers(stItemRefId, objConfig);
-                        log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
-                    }
 
 
                     if (objResponse.code == 200) {
                         var objResponseBody = JSON.parse(objResponse.body);
                         log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseBody);
-
-                        var arrPlans = objResponseBody.plans.adh;
-                        log.debug('OFFER MODAL SUITELET: arrPlans', arrPlans);
-                        if (!arrPlans) {
-                            var arrPlans = objResponseBody.plans.base;
-                            if(!arrPlans){
-                                ///show alert no plans for item
-                            }
-                        }
                         
-                        //Populate Sublist Values
-                        for (var i = 0; i < arrPlans.length; i++) {
                             objPlanList.setSublistValue({
                                 id: 'custpage_item_id',
                                 line: i,
@@ -399,14 +381,12 @@ function (ui, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG) {
                                 line: i,
                                 value: parseFloat(arrPlans[i].price) / 100
                             });
-                        }
                     }
 
                 } catch (e) {
-
+log.debug('error', e);
                 }
 
-            }
             //Set Client handler
             objForm.clientScriptModulePath = '../client/customscript_ext_offer_modal_controller.js';
             //Write Page
