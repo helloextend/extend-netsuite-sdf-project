@@ -82,6 +82,10 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
             sublistId: context.sublistId,
             fieldId: 'quantity'
         });
+        var intPrice = parseInt(objCurrentRecord.getCurrentSublistValue({
+            sublistId: context.sublistId,
+            fieldId: 'rate'
+        }) *100); 
         if (refIdValue) {
             // Lookup to item to see if it is eligible for warranty offers
             var arrItemLookup = search.lookupFields({
@@ -133,13 +137,15 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
         objItem.qty = intQty;
         objItem.line = stLineNum;
         objItem.refId = stItemRefId;
+        objItem.price = intPrice;
+        objItem.category = stItemCategory;
         //console.log('objItem', objItem);
         //push to array
         arrItemList.push(objItem);
         arrItemList = JSON.stringify(arrItemList);
         console.log('arrItemList', arrItemList);
 
-            _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, intQty, stItemRefId, stExtendConfigRecId);
+            _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, intQty, stItemRefId, intPrice, stItemCategory, stExtendConfigRecId);
 
         return true;
     }
@@ -184,6 +190,11 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
                     fieldId: 'quantity',
                     line: i
                 });
+                var intPrice = parseInt(objCurrentRecord.getSublistValue({
+                    sublistId: stSublistId,
+                    fieldId: 'rate',
+                    line: i
+                }) *100); 
                 // Lookup to item to see if it is eligible for warranty offers
                 /*
                 var arrItemLookupField = search.lookupFields({
@@ -228,6 +239,9 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
                 objItem.qty = intQty;
                 objItem.line = i;
                 objItem.refId = stItemRefId;
+                objItem.price = intPrice;
+                objItem.category = stItemCategory;
+
                 //console.log('objItem', objItem);
                 //push to array
                 // If item is not a warranty item, return
@@ -237,30 +251,9 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
             }
             var stArrayItemList = JSON.stringify(arrItemList);
             console.log('stArrayItemList', stArrayItemList);
-            _callSuitelet(stArrayItemList, arrItemList[0].id, arrItemList[0].name, arrItemList[0].line, arrItemList[0].qty, arrItemList[0].refId, stExtendConfigRecId);
+            _callSuitelet(stArrayItemList, arrItemList[0].id, arrItemList[0].name, arrItemList[0].line, arrItemList[0].qty, arrItemList[0].refId, arrItemList[0].price, arrItemList[0].category, stExtendConfigRecId);
         }
-
-        function _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, stItemQty, stItemRefId, config) {
-            console.log('config', config);
-            //Resolve suitelet URL
-            var slUrl = url.resolveScript({
-                scriptId: 'customscript_ext_offer_presentation_sl',
-                deploymentId: 'customdeploy_ext_offer_presentation_sl',
-                params: {
-                    'itemid': stItemId,
-                    'itemtext': stItemName,
-                    'arrItemid': arrItemList,
-                    'line': stLineNum,
-                    'quantity': stItemQty,
-                    'refid': stItemRefId,
-                    'config' : config,
-                   // 'leadToken': stLeadToken
-                }
-            });
-            console.log('slUrl', slUrl);
-            //Call the pop up suitelet
-            window.open(slUrl, '_blank', 'screenX=300,screenY=300,width=900,height=500,titlebar=0,status=no,menubar=no,resizable=0,scrollbars=0');
-    function _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, stItemQty, stItemRefId, config) {
+    function _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, stItemQty, stItemRefId, intItemPrice, stItemCategory, config) {
         console.log('config', config);
         //Resolve suitelet URL
         var slUrl = url.resolveScript({
@@ -273,6 +266,8 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
                 'line': stLineNum,
                 'quantity': stItemQty,
                 'refid': stItemRefId,
+                'price': intItemPrice,
+                'category': stItemCategory,
                 'config' : config,
                // 'leadToken': stLeadToken
             }

@@ -116,11 +116,11 @@ define([
              * GET OFFERS
              * API Documentation: https://developers.extend.com/default#operation/getOffer
              */
-            exports.getOffers= function (stItemId, stItemCategory, stItemPrice, config) {
+            exports.getOffers= function (objItem, config) {
                     // var config = extendConfig.getConfig();
                     try {
                             var response = https.get({
-                                    url: config.domain + '/offers?storeId=' + config.storeId + '&productId=' + stItemId + '&category=' + stItemCategory + '&price=' + stItemPrice,
+                                    url: config.domain + '/offers?storeId=' + config.storeId + '&productId=' + objItem.id + '&category=' + objItem.category + '&price=' + objItem.price,
                                     headers: {
                                             'Content-Type': 'application/json',
                                             'X-Extend-Access-Token': config.key,

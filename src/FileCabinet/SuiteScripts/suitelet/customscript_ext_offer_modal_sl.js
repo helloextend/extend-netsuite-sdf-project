@@ -167,14 +167,18 @@ define([
                 arrItemList = JSON.parse(context.request.parameters.arrItemid);
                 var stItemInternalId = context.request.parameters.itemid;
                 var stItemRefId = context.request.parameters.refid;
+                var stItemPrice = context.request.parameters.price;
+                var stItemCategory = context.request.parameters.category;
                 var stLeadToken = context.request.parameters.leadToken;
                 var stConfigRec = JSON.parse(context.request.parameters.config);
                 var objConfig = EXTEND_CONFIG.getConfig(stConfigRec);
                 log.debug('stItemRefId', stItemRefId);
                 log.debug('stLeadToken', stLeadToken);
                 log.debug('objConfig ' + typeof objConfig, objConfig);
-
-
+                var objItem = {};
+                objItem.id = stItemRefId;
+                objItem.category = stItemCategory;
+                objItem.price = stItemPrice;
                 // Create the form
                 var objForm = ui.createForm({
                     title: 'Extend Protection Plans',
@@ -343,10 +347,9 @@ define([
                             var objResponse = EXTEND_API.getLeadOffers(stLeadToken, objConfig);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
                         } else {
-                            var objResponse = EXTEND_API.getOffers(stItemRefId, objConfig);
+                            var objResponse = EXTEND_API.getOffers(objItem, objConfig);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
                         }
-
 
                         if (objResponse.code == 200) {
                             var objResponseBody = JSON.parse(objResponse.body);
