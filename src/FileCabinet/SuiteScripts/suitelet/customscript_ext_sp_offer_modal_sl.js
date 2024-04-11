@@ -388,7 +388,7 @@ log.debug('error', e);
                 }
 
             //Set Client handler
-            objForm.clientScriptModulePath = '../client/customscript_ext_offer_modal_controller.js';
+            objForm.clientScriptModulePath = '../client/customscript_ext_sp_offer_modal_controller.js';
             //Write Page
             context.response.writePage(objForm);
         } catch (e) {
