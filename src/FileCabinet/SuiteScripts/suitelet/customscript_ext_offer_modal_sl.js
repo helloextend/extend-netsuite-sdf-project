@@ -353,8 +353,11 @@ define([
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseBody);
 
                             var arrPlans = objResponseBody.plans.base;
-                            if (EXTEND_UTIL.objectIsEmpty(arrPlans)) {
+                            log.debug('OFFER MODAL SUITELET: arrPlans', arrPlans);
+
+                            if (EXTEND_UTIL.objectIsEmpty(arrPlans) || !arrPlans) {
                                 var arrPlans = objResponseBody.plans.adh;
+                                log.debug('OFFER MODAL SUITELET: arrPlans', arrPlans);
                             }
                             log.debug('OFFER MODAL SUITELET: arrPlans', arrPlans);
 
