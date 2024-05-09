@@ -324,8 +324,8 @@ define([
                                             objExtendItemData[stUniqueKey].extend_plan_id = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_plan_id', line: i });
                                             objExtendItemData[stUniqueKey].extend_line = "" + i;
                                             objExtendItemData[stUniqueKey].plan_price = parseInt(objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'rate', line: i }) * 100);
-                                            if(!objExtendItemData[stUniqueKey].plan_price){
-                                                objExtendItemData[stUniqueKey].plan_price = parseInt(((objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'amount', line: i })/objExtendItemData[stUniqueKey].quantity).toFixed(2)) * 100);
+                                            if (!objExtendItemData[stUniqueKey].plan_price || objExtendItemData[stUniqueKey].plan_price== 0) {
+                                                objExtendItemData[stUniqueKey].plan_price = parseInt(((objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'amount', line: i }) / objExtendItemData[stUniqueKey].quantity).toFixed(2)) * 100);
                                             }
                                             //set Extend Line Item Transaction ID on Extend Line
                                             objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;
@@ -349,9 +349,9 @@ define([
                                                             objExtendItemData[stUniqueKey].itemId = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_associated_item', line: i });;
                                                             objExtendItemData[stUniqueKey].extend_line = "" + i;
                                                             objExtendItemData[stUniqueKey].plan_price = parseInt(objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'rate', line: i }) * 100);
-                                                            if(!objExtendItemData[stUniqueKey].plan_price){
-                                                                objExtendItemData[stUniqueKey].plan_price = parseInt(((objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'amount', line: i })/objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'quantity', line: i })).toFixed(2)) * 100);
-                                                        }
+                                                            if (!objExtendItemData[stUniqueKey].plan_price || objExtendItemData[stUniqueKey].plan_price== 0) {
+                                                                objExtendItemData[stUniqueKey].plan_price = parseInt(((objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'amount', line: i }) / objExtendItemData[stUniqueKey].quantity).toFixed(2)) * 100);
+                                                            }
                                                         log.debug('price', objExtendItemData[stUniqueKey].plan_price)    
 
                                                             //set Extend Line Item Transaction ID of related product on Extend Line
@@ -370,8 +370,8 @@ define([
                                     objExtendItemData[stUniqueKey].itemId = stItemId
                                     objExtendItemData[stUniqueKey].line = i;
                                     objExtendItemData[stUniqueKey].purchase_price = parseInt(objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'rate', line: i }) * 100);
-                                    if(!objExtendItemData[stUniqueKey].purchase_price){
-                                        objExtendItemData[stUniqueKey].purchase_price = parseInt(((objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'amount', line: i })/objExtendItemData[stUniqueKey].quantity).toFixed(2)) * 100);
+                                    if (!objExtendItemData[stUniqueKey].purchase_price || objExtendItemData[stUniqueKey].purchase_price== 0) {
+                                        objExtendItemData[stUniqueKey].purchase_price = parseInt(((objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'amount', line: i }) / objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'quantity', line: i })).toFixed(2)) * 100);
                                     }
                                     objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;
                                     if (objExtendItemData[stUniqueKey].extend_line) {
