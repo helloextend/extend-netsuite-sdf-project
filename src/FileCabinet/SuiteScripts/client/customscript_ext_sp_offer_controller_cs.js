@@ -59,14 +59,14 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
                 fieldId: 'item',
                 line: i
             });
-            var intQty = objCurrentRecord.getSublistText({
+            var intQty = objCurrentRecord.getSublistValue({
                 sublistId: stSublistId,
                 fieldId: 'quantity',
                 line: i
             });
-            var intPrice = objCurrentRecord.getSublistText({
+            var intPrice = objCurrentRecord.getSublistValue({
                 sublistId: stSublistId,
-                fieldId: 'quantity',
+                fieldId: 'rate',
                 line: i
             });
             var stItemCategory = ;
