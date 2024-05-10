@@ -171,7 +171,7 @@ define([
                 * GET SHIPPING MARKETING
                 * API Documentation:  https://docs.extend.com/reference/shippingoffersmarketingget 
                 */
-                exports.getSPMarketing = function (objLeadDetails, config) {
+                exports.getSPMarketing = function (config) {
                         // var config = extendConfig.getConfig();
                         try {
                                 var response = https.get({
@@ -194,7 +194,7 @@ define([
                 * GET SHIPPING CONFIG
                 * API Documentation:  https://docs.extend.com/reference/shippingoffersconfigget 
                 */
-                exports.getSPConfig = function (objLeadDetails, config) {
+                exports.getSPConfig = function (config) {
                         // var config = extendConfig.getConfig();
                         try {
                                 var response = https.get({

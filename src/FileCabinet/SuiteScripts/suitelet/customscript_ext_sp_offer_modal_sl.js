@@ -72,7 +72,7 @@ function (ui, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG) {
             objExtendItem.stLeadToken = objRequest.parameters.custpage_lead_input;
             objExtendItem.stPlanId = '';
             objExtendItem.stPrice = 0;
-            objExtendItem.stDescription = '';
+            objExtendItem.stDescription = 'Extend Shipping Protection';
 
             // Get line information from selected line
             for (var i = 0; i < stPlanCount; i++) {
@@ -122,14 +122,6 @@ function (ui, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG) {
 
         }
     };
-    function _getDescription(stTerm) {
-        var stText = '';
-        //term change to formula instead of case
-        var stTermYears = parseInt(stTerm) / 12;
-        log.debug('stTermYears', stTermYears);
-        stText = "Extend " + stTermYears + "yr Protection Plan";
-        return stText;
-    };
     function _handleError(context) {
 
         throw error.create({
@@ -143,16 +135,11 @@ function (ui, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG) {
         try {
             log.debug('GET Params', context.request.parameters);
             // Get plans and populate sublist
-            log.debug('arrItemList', context.request.parameters.arrItemid + typeof context.request.parameters.arrItemid);
-            var arrItemList = [];
-            arrItemList = JSON.parse(context.request.parameters.arrItemid);
-            var stItemInternalId = context.request.parameters.itemid;
-            var stItemRefId = context.request.parameters.refid;
-            var stLeadToken = context.request.parameters.leadToken;
+            log.debug('objCartJSON', context.request.parameters.objCartJSON + typeof context.request.parameters.objCartJSON);
+            var objCartJSON = {};
+            objCartJSON = JSON.parse(context.request.parameters.objCartJSON);
             var stConfigRec = JSON.parse(context.request.parameters.config);
             var objConfig = EXTEND_CONFIG.getConfig(stConfigRec);
-            log.debug('stItemRefId', stItemRefId);
-            log.debug('stLeadToken', stLeadToken);
             log.debug('objConfig ' + typeof objConfig,  objConfig);
 
 
@@ -164,15 +151,6 @@ function (ui, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG) {
             /**
              * HEADER FIELDS
              */
-                //Hidden field of line number
-            var objLineNumField = objForm.addField({
-                    id: 'custpage_line_num',
-                    type: ui.FieldType.INTEGER,
-                    label: 'Line Number'
-                });
-            objLineNumField.updateDisplayType({
-                displayType: ui.FieldDisplayType.HIDDEN
-            });
             //Hidden field of item array
             var objItemListField = objForm.addField({
                 id: 'custpage_item_list',
@@ -182,47 +160,8 @@ function (ui, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG) {
             objItemListField.updateDisplayType({
                 displayType: ui.FieldDisplayType.HIDDEN
             });
-            if (context.request.parameters.arrItemid) {
-                objItemListField.defaultValue = context.request.parameters.arrItemid;
-
-            }
-            //Hidden field of item name
-            var objItemNameField = objForm.addField({
-                id: 'custpage_item_name',
-                type: ui.FieldType.TEXT,
-                label: 'Item Name'
-            });
-            objItemNameField.updateDisplayType({
-                displayType: ui.FieldDisplayType.HIDDEN
-            });
-            if (context.request.parameters.itemtext) {
-                objItemNameField.defaultValue = context.request.parameters.itemtext;
-
-            }
-            //Hidden field of item refid
-            var objItemRefIdField = objForm.addField({
-                id: 'custpage_item_ref_id',
-                type: ui.FieldType.TEXT,
-                label: 'Item Ref ID'
-            });
-            objItemRefIdField.updateDisplayType({
-                displayType: ui.FieldDisplayType.HIDDEN
-            });
-            if (context.request.parameters.refid) {
-                objItemRefIdField.defaultValue = context.request.parameters.refid;
-
-            }
-            //Hidden field of item name
-            var objItemQtyField = objForm.addField({
-                id: 'custpage_item_qty',
-                type: ui.FieldType.TEXT,
-                label: 'Item Quantity'
-            });
-            objItemQtyField.updateDisplayType({
-                displayType: ui.FieldDisplayType.HIDDEN
-            });
-            if (context.request.parameters.quantity) {
-                objItemQtyField.defaultValue = context.request.parameters.quantity;
+            if (context.request.parameters.objCartJSON) {
+                objItemListField.defaultValue = context.request.parameters.objCartJSON;
 
             }
             //Hidden field for config
@@ -257,11 +196,12 @@ function (ui, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG) {
             objOfferTextField.updateDisplayType({
                 displayType: ui.FieldDisplayType.INLINE
             });
+            //todo script text update
             objOfferTextField.defaultValue = "We have several protection plans available for your purchase \n These protection plans cover accidental damage in addition to standard defects \n Would you be interested in protecting your purchase with us today? \n <custom training text available>";
             //Next Steps Group
             var objProcessGroup = objForm.addFieldGroup({
                 id: 'custpage_process',
-                label: 'Adding an Extend Protection Plan'
+                label: 'Adding an Extend Shipping Protection Plan'
             });
             //OFFER TELESALES INSTRUCTION SCRIPT
             var objProcessScript = objForm.addField({
@@ -276,89 +216,25 @@ function (ui, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG) {
             objProcessScript.updateDisplayType({
                 displayType: ui.FieldDisplayType.INLINE
             });
-            objProcessScript.defaultValue = "1. Select an Item from the drop down list or input a Lead Token for post-purchase offers \n 2.Check the box next to the protection plan your customer has selected \n 3. Click on the blue submit button to add the protection plan and return to the order \n 4. If the customer does not want a protection plan, simply click cancel";
+            objProcessScript.defaultValue = "1. Inform the customer of the plan offering using the compliant script above \n 3. Click on the blue 'Add Plan' button to add the shipping protection plan and return to the order \n 4. If the customer does not want a shipping protection plan, simply click cancel";
             var objItemGroup = objForm.addFieldGroup({
                 id: 'custpage_item',
                 label: 'Item'
             });
-
-            var objItemSelectField = objForm.addField({
-                id: 'custpage_item_select',
-                type: ui.FieldType.SELECT,
-                label: 'Select Item',
-                container: 'custpage_item'
-            });
-            //Iterate Items from params
-            for (var i = 0; i < arrItemList.length; i++) {
-                objItemSelectField.addSelectOption({
-                    value: arrItemList[i].id,
-                    text: arrItemList[i].name
-                });
-            }
-            if (stItemInternalId) {
-                objItemSelectField.defaultValue = stItemInternalId;
-            }
-            var objLeadTokenInputField = objForm.addField({
-                id: 'custpage_lead_input',
-                type: ui.FieldType.TEXT,
-                label: 'Input Lead Token',
-                container: 'custpage_item'
-            });
-            if (stLeadToken) {
-                objLeadTokenInputField.defaultValue = stLeadToken;
-            }
-
-            /**
-             * BUILD SUBLIST
-             */
-                // Add plans sublist
-            var objPlanList = objForm.addSublist({
-                    id: 'custpage_plans',
-                    type: ui.SublistType.LIST,
-                    label: 'Eligble Plans'
-                });
-            objPlanList.addField({
-                id: 'custpage_select',
-                type: ui.FieldType.CHECKBOX,
-                label: 'Select'
-            });
-            var objItemIdField = objPlanList.addField({
-                id: 'custpage_item_id',
-                type: ui.FieldType.TEXT,
-                label: 'ID'
-            });
-            objItemIdField.updateDisplayType({
-                displayType: ui.FieldDisplayType.HIDDEN
-            });
-            objPlanList.addField({
-                id: 'custpage_plan_title',
-                type: ui.FieldType.TEXT,
-                label: 'Title'
-            });
-            objPlanList.addField({
-                id: 'custpage_plan_term',
-                type: ui.FieldType.TEXT,
-                label: 'Coverage Term (Months)'
-            });
-            objPlanList.addField({
-                id: 'custpage_plan_price',
-                type: ui.FieldType.CURRENCY,
-                label: 'Price'
-            });
-
+            
             // Add Submit Button
             objForm.addButton({
                 id: 'custpage_cancel',
                 label: 'Cancel',
                 functionName: 'handleClose()'
             });
-            objForm.addSubmitButton('Submit');
+            objForm.addSubmitButton('Add Plan');
             /**
              * POPULATE SUBLIST
              */
 
                 try {
-                        var objResponse = EXTEND_API.getSPOffers(objCart, objConfig);
+                        var objResponse = EXTEND_API.getSPOffers(objCartJSON, objConfig);
                         log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
 
 
@@ -366,26 +242,27 @@ function (ui, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG) {
                         var objResponseBody = JSON.parse(objResponse.body);
                         log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseBody);
                         
-                            objPlanList.setSublistValue({
-                                id: 'custpage_item_id',
-                                line: i,
-                                value: arrPlans[i].id
-                            });
-                            objPlanList.setSublistValue({
-                                id: 'custpage_plan_title',
-                                line: i,
-                                value: arrPlans[i].title
-                            });
-                            objPlanList.setSublistValue({
-                                id: 'custpage_plan_price',
-                                line: i,
-                                value: parseFloat(arrPlans[i].price) / 100
-                            });
                     }
 
                 } catch (e) {
 log.debug('error', e);
                 }
+
+                try {
+                    var objResponseMarketing = EXTEND_API.getSPMarketing(objConfig);
+                    log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseMarketing);
+
+                    var objResponseConfig = EXTEND_API.getSPMarketing(objConfig);
+                    log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseConfig);
+                if (objResponseConfig.code == 200) {
+                    var objResponseBody = JSON.parse(objResponseConfig.body);
+                    log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseBody);
+                    
+                }
+
+            } catch (e) {
+log.debug('error', e);
+            }
 
             //Set Client handler
             objForm.clientScriptModulePath = '../client/customscript_ext_sp_offer_modal_controller.js';
