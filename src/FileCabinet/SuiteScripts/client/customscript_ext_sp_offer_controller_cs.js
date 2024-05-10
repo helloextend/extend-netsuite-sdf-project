@@ -64,11 +64,11 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
                 fieldId: 'quantity',
                 line: i
             });
-            var intPrice = objCurrentRecord.getSublistValue({
+            var intPrice = parseInt(objCurrentRecord.getSublistValue({
                 sublistId: stSublistId,
-                fieldId: 'rate',
-                line: i
-            });
+                fieldId: 'rate'
+            }) * 100);
+
             var stItemCategory = ;
             if (refIdValue) {
                 // Lookup to item to see if it is eligible for warranty offers
