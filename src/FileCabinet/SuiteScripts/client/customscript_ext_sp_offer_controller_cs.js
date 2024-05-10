@@ -68,7 +68,9 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
                 sublistId: stSublistId,
                 fieldId: 'rate'
             }) * 100);
-
+            if (!intPrice || intPrice == 0) {
+                intPrice = parseInt(((objCurrentRecord.getSublistValue({ sublistId: stSublistId, fieldId: 'amount', line: i }) / intQty).toFixed(2)) * 100);
+            }
             var stItemCategory = ;
             if (refIdValue) {
                 // Lookup to item to see if it is eligible for warranty offers
