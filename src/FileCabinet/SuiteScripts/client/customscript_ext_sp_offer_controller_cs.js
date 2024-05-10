@@ -43,7 +43,8 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
         console.log('config', config);
 
         var refIdValue = config.refId;
-        var stExtendItem = config.shipping_plan_item;
+        var stExtendSPItem = config.shipping_plan_item;
+        var stExtendItem = config.product_plan_item;
         
         //loop item sublist or retrieve for single line item if validate line function
         for (var i = 0; i < linecount; i++) {
@@ -52,7 +53,6 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
                 fieldId: 'item',
                 line: i
             });
-
             var stItemRefId = stItemId;
             var stItemName = objCurrentRecord.getSublistText({
                 sublistId: stSublistId,
@@ -64,6 +64,12 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
                 fieldId: 'quantity',
                 line: i
             });
+            var intPrice = objCurrentRecord.getSublistText({
+                sublistId: stSublistId,
+                fieldId: 'quantity',
+                line: i
+            });
+            var stItemCategory = ;
             if (refIdValue) {
                 // Lookup to item to see if it is eligible for warranty offers
                 var arrItemLookup = search.lookupFields({
@@ -96,12 +102,12 @@ function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEN
             objItem.id = stItemId;
             objItem.name = stItemName;
             objItem.qty = intQty;
-            objItem.line = i;
+            objItem.category = ;
+            objItem.price = intPrice;
             objItem.refId = stItemRefId;
-            //console.log('objItem', objItem);
             //push to array
-            // If item is not a warranty item, return
-            if (stExtendItem != stItemId) {
+            // If item is not a extend item, push to array
+            if (stExtendItem != stItemId && stExtendSPItem != stItemId) {
                 arrItemList.push(objItem);
             }
         }
