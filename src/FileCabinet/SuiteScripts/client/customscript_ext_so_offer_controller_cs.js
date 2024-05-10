@@ -13,14 +13,14 @@
  *@NModuleScope Public
  */
 define([
-        'N/url',
-        'N/runtime',
-        'N/search',
-        'N/currentRecord',
-        '../lib/customscript_ext_util',
-        '../lib/customscript_ext_config_lib',
-        '../lib/customscript_ext_api_lib'
-    ],
+    'N/url',
+    'N/runtime',
+    'N/search',
+    'N/currentRecord',
+    '../lib/customscript_ext_util',
+    '../lib/customscript_ext_config_lib',
+    '../lib/customscript_ext_api_lib'
+],
     function (url, runtime, search, currentRecord, EXTEND_UTIL, EXTEND_CONFIG, EXTEND_API) {
         var exports = {};
         exports.pageInit = function () {
@@ -82,6 +82,14 @@ define([
                 sublistId: context.sublistId,
                 fieldId: 'quantity'
             });
+            var intPrice = objCurrentRecord.getCurrentSublistValue({
+                sublistId: context.sublistId,
+                fieldId: 'rate',
+                line: i
+            });
+            if (!intPrice || intPrice == 0) {
+                intPrice = parseInt(((objCurrentRecord.getCurrentSublistValue({ sublistId: context.sublistId, fieldId: 'amount', line: i }) / intQty).toFixed(2)) * 100);
+            }
             if (refIdValue) {
                 // Lookup to item to see if it is eligible for warranty offers
                 var arrItemLookup = search.lookupFields({
@@ -123,7 +131,7 @@ define([
                 log.debug('arrPlans', arrPlans);
             }
             //if no plans, product is assumed not warrantable
-            if(arrPlans.length == 0){
+            if (arrPlans.length == 0) {
                 return true;
             }
 
@@ -184,16 +192,15 @@ define([
                     fieldId: 'quantity',
                     line: i
                 });
-                // Lookup to item to see if it is eligible for warranty offers
-                /*
-                var arrItemLookupField = search.lookupFields({
-                    type: 'item',
-                    id: stItemId,
-                    columns: 'custitem_product_protection_item'
+                var intPrice = objCurrentRecord.getSublistValue({
+                    sublistId: stSublistId,
+                    fieldId: 'rate',
+                    line: i
                 });
-               // var bIsWarranty = arrItemLookupField.custitem_ext_is_warrantable;
-*/
-              //  log.debug('Is warranty', typeof(bIsWarranty) + ', ' + bIsWarranty);
+                if (!intPrice || intPrice == 0) {
+                    intPrice = parseInt(((objCurrentRecord.getSublistValue({ sublistId: stSublistId, fieldId: 'amount', line: i }) / intQty).toFixed(2)) * 100);
+                }
+
                 if (refIdValue) {
                     // Lookup to item to see if it is eligible for warranty offers
                     var arrItemLookup = search.lookupFields({
@@ -253,8 +260,8 @@ define([
                     'line': stLineNum,
                     'quantity': stItemQty,
                     'refid': stItemRefId,
-                    'config' : config,
-                   // 'leadToken': stLeadToken
+                    'config': config,
+                    // 'leadToken': stLeadToken
                 }
             });
             console.log('slUrl', slUrl);
