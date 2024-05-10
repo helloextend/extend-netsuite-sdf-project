@@ -140,6 +140,8 @@ define(['N/url',
             var stItemQty;
             var stLineNum;
             var stItemRefId;
+            var stItemPrice;
+            var stItemCategory;
 
             if (!EXTEND_UTIL.objectIsEmpty(stItemId)) {
                 var arrItemList = JSON.parse(stItemList);
@@ -148,6 +150,8 @@ define(['N/url',
                 stItemQty = objItem.qty;
                 stLineNum = objItem.line;
                 stItemRefId = objItem.refId;
+                stItemPrice = objItem.price;
+                stItemCategory = objItem.category;
             }
 
             var URL = url.resolveScript({
@@ -160,6 +164,8 @@ define(['N/url',
                     'line': stLineNum,
                     'quantity': stItemQty,
                     'refid': stItemRefId,
+                    'price': stItemPrice,
+                    'category': stItemCategory,
                     'leadToken': stLeadToken,
                     'config': stConfigRec
 
