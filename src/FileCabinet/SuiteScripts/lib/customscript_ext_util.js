@@ -261,6 +261,7 @@ function (runtime, search, record, error, EXTEND_API, EXTEND_CONFIG) {
                 objExtendData.currency = 'USD';
                 objExtendData.order_number = objSalesOrderRecord.getValue({ fieldId: 'tranid' });
                 objExtendData.total_amount = objSalesOrderRecord.getValue({ fieldId: 'total' });
+                objExtendData.shipping_total_amount = 0;
                 objExtendData.shipping_total_amount = objSalesOrderRecord.getValue({ fieldId: 'shippingcost' });
                 objExtendData.tax_total_amount = objSalesOrderRecord.getValue({ fieldId: 'taxtotal' });
                 objExtendData.name = objSalesOrderRecord.getText({ fieldId: 'entity' }).replace(/[0-9]/g, '');
