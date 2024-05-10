@@ -374,6 +374,10 @@ function (runtime, search, record, error, EXTEND_API, EXTEND_CONFIG) {
                                     if (!objExtendItemData[stUniqueKey].purchase_price || objExtendItemData[stUniqueKey].purchase_price== 0) {
                                         objExtendItemData[stUniqueKey].purchase_price = parseInt(((objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'amount', line: i }) / objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'quantity', line: i })).toFixed(2)) * 100);
                                     }
+                                    objExtendItemData[stUniqueKey].list_price = objExtendItemData[stUniqueKey].purchase_price;
+                                    objExtendItemData[stUniqueKey].title = objSalesOrderRecord.getSublistText({ sublistId: 'item', fieldId: 'item', line: i });
+                                    objExtendItemData[stUniqueKey].category = exports.getItemCategory(stItemId, objExtendConfig);
+                                    log.debug('object objExtendItemData[stUniqueKey].category', objExtendItemData[stUniqueKey].category);
                                     objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;
                                     if (objExtendItemData[stUniqueKey].extend_line) {
                                             objExtendItemData[stUniqueKey].lineItemID = objExtendItemData[stUniqueKey].lineItemID + "-" + objExtendItemData[stUniqueKey].extend_line;
