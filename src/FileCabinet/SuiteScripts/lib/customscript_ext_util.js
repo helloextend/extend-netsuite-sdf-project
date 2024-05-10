@@ -3,7 +3,7 @@
  *@description: Structures the various JSON request bodies to the Extend API
  * @NApiVersion 2.x
  */
-define([
+ define([
         'N/runtime',
         'N/search',
         'N/record',
@@ -282,12 +282,23 @@ define([
                         //Build SO Info Object
                         objExtendData.id = objSalesOrderRecord.getValue({ fieldId: 'tranid' }) + '-' + objSalesOrderRecord.id;
                         objExtendData.tran_date = exports.getepochDate();
-                        objExtendData.currency = 'USD';
+                        objExtendData.currency = objSalesOrderRecord.getText({ fieldId: 'currency' });
                         objExtendData.order_number = objSalesOrderRecord.getValue({ fieldId: 'tranid' });
-                        objExtendData.total_amount = objSalesOrderRecord.getValue({ fieldId: 'total' });
+                        objExtendData.total_amount = 0;
                         objExtendData.shipping_total_amount = 0;
-                        objExtendData.shipping_total_amount = objSalesOrderRecord.getValue({ fieldId: 'shippingcost' });
-                        objExtendData.tax_total_amount = objSalesOrderRecord.getValue({ fieldId: 'taxtotal' });
+                        objExtendData.tax_total_amount = 0;
+                  if(objSalesOrderRecord.getValue({ fieldId: 'total' })){
+                                            objExtendData.total_amount = parseFloat(objSalesOrderRecord.getValue({ fieldId: 'total' }));
+
+                  }
+                  if(objSalesOrderRecord.getValue({ fieldId: 'shippingcost' })){
+                                            objExtendData.shipping_total_amount = parseFloat(objSalesOrderRecord.getValue({ fieldId: 'shippingcost' }));
+
+                  }
+                  if(objSalesOrderRecord.getValue({ fieldId: 'taxtotal' })){
+                                            objExtendData.tax_total_amount = parseFloat(objSalesOrderRecord.getValue({ fieldId: 'taxtotal' }));
+
+                  }
                         objExtendData.name = objSalesOrderRecord.getText({ fieldId: 'entity' }).replace(/[0-9]/g, '');
                         objExtendData.email = objCustomerInfo.email;
                         objExtendData.phone = objCustomerInfo.phone;
@@ -325,16 +336,18 @@ define([
                                         objExtendItemData[stUniqueKey] = {};
                                 }
                                 //Check if item is one of the configured extend items
-                                if (stExtendShippingItemId === stItemId) {
-                                        //if line is shipping proection
-                                        objExtendItemData[stUniqueKey] = {};
-                                        objExtendItemData[stUniqueKey].isShipping = true;
-                                        // Start building the Extend Order Plan Info Object
-                                        objExtendItemData[stUniqueKey].quoteId = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_quote_id', line: i });
-                                        //set Extend Line Item Transaction ID on Extend Line
-                                        objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;
-                                        objExtendItemData[stUniqueKey].shipmentInfo = objSalesOrderRecord.getValue({ fieldId: 'linkedtrackingnumbers' });
-                                }
+                        if (stExtendShippingItemId === stItemId) {
+                                //if line is shipping proection
+                                objExtendItemData[stUniqueKey] = {};
+                                objExtendItemData[stUniqueKey].isShipping = true;
+                                // Start building the Extend Order Plan Info Object
+                                objExtendItemData[stUniqueKey].quoteId = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_quote_id', line: i });
+                                //set Extend Line Item Transaction ID on Extend Line
+                                objExtendItemData[stUniqueKey].lineItemID = "" + objSalesOrderRecord.id + "-" + i;
+                                objExtendItemData[stUniqueKey].trackingId = objSalesOrderRecord.getValue({ fieldId: 'linkedtrackingnumbers' });
+                                objExtendItemData[stUniqueKey].carrier = objSalesOrderRecord.getValue({ fieldId: 'shipcarrier' });
+                                objExtendItemData[stUniqueKey].destAddress = exports.getAddress(objSalesOrderRecord, 'shippingaddress');                                    
+                        }
                                 if (stExtendProductItemId === stItemId) {
                                         log.debug('_getExtendData: Item Found | Line ', stItemId + ' | ' + i);
                                         //get value of leadtoken column on extend line
