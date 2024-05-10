@@ -134,6 +134,7 @@ define(['N/url',
             var stLeadToken = objCurrentRec.getValue({ fieldId: 'custpage_lead_input' });
             var stItemId = objCurrentRec.getValue({ fieldId: 'custpage_item_select' });
             console.log('stItemId', stItemId);
+            var stConfigRec = objCurrentRec.getValue({ fieldId: 'custpage_config' });
             var stItemName = objCurrentRec.getText({ fieldId: 'custpage_item_select' });
             var stItemList = objCurrentRec.getValue({ fieldId: 'custpage_item_list' });
             var stItemQty;
@@ -159,7 +160,9 @@ define(['N/url',
                     'line': stLineNum,
                     'quantity': stItemQty,
                     'refid': stItemRefId,
-                    'leadToken': stLeadToken
+                    'leadToken': stLeadToken,
+                    'config': stConfigRec
+
                 }
             });
 

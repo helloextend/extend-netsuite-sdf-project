@@ -14,16 +14,19 @@
  *@NModuleScope Public
  */
 define([
-        'N/ui/serverWidget',
-        'N/runtime',
-        'N/http',
-        'N/error',
-        'N/log',
-        '../lib/customscript_ext_api_lib',
-        '../lib/customscript_ext_config_lib'
+    'N/ui/serverWidget',
+    'N/ui/message',
+    'N/ui/dialog',
+    'N/runtime',
+    'N/http',
+    'N/error',
+    'N/log',
+    '../lib/customscript_ext_api_lib',
+    '../lib/customscript_ext_config_lib',
+    '../lib/customscript_ext_util'
 
-    ],
-    function (ui, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG) {
+],
+    function (ui, message, dialog, runtime, http, error, log, EXTEND_API, EXTEND_CONFIG, EXTEND_UTIL) {
 
         var exports = {};
 
@@ -52,15 +55,15 @@ define([
                 log.debug('POST: Context Object', JSON.stringify(context));
 
                 var objRequest = context.request;
-
                 var objExtendItem = {};
-
                 var stPlanCount = objRequest.getLineCount({ group: 'custpage_plans' });
-
                 // objExtendItem.stWarrantyItemId = runtime.getCurrentScript().getParameter({ name: 'custscript_ext_protection_plan' });
-                //var extendConfigRec =
-                objExtendItem.stWarrantyItemId = JSON.parse(objRequest.parameters.custpage_config).product_plan_item;
-
+                // objExtendItem.stWarrantyItemId = JSON.parse(objRequest.parameters.custpage_config).product_plan_item;
+                var stConfigRec = objRequest.parameters.custpage_config;
+                log.debug('POST: stConfigRec', stConfigRec);
+                var objConfig = EXTEND_CONFIG.getConfig(stConfigRec);
+                log.debug('POST: objConfig', objConfig);
+                objExtendItem.stWarrantyItemId = objConfig.product_plan_item;
                 //Line Number
                 // var stProductLine = objRequest.parameters.custpage_line_num;
                 // log.debug('POST: Product Line', stProductLine);
@@ -169,7 +172,7 @@ define([
                 var objConfig = EXTEND_CONFIG.getConfig(stConfigRec);
                 log.debug('stItemRefId', stItemRefId);
                 log.debug('stLeadToken', stLeadToken);
-                log.debug('objConfig ' + typeof objConfig,  objConfig);
+                log.debug('objConfig ' + typeof objConfig, objConfig);
 
 
                 // Create the form
@@ -180,12 +183,12 @@ define([
                 /**
                  * HEADER FIELDS
                  */
-                    //Hidden field of line number
+                //Hidden field of line number
                 var objLineNumField = objForm.addField({
-                        id: 'custpage_line_num',
-                        type: ui.FieldType.INTEGER,
-                        label: 'Line Number'
-                    });
+                    id: 'custpage_line_num',
+                    type: ui.FieldType.INTEGER,
+                    label: 'Line Number'
+                });
                 objLineNumField.updateDisplayType({
                     displayType: ui.FieldDisplayType.HIDDEN
                 });
@@ -323,45 +326,6 @@ define([
                 if (stLeadToken) {
                     objLeadTokenInputField.defaultValue = stLeadToken;
                 }
-
-                /**
-                 * BUILD SUBLIST
-                 */
-                    // Add plans sublist
-                var objPlanList = objForm.addSublist({
-                        id: 'custpage_plans',
-                        type: ui.SublistType.LIST,
-                        label: 'Eligble Plans'
-                    });
-                objPlanList.addField({
-                    id: 'custpage_select',
-                    type: ui.FieldType.CHECKBOX,
-                    label: 'Select'
-                });
-                var objItemIdField = objPlanList.addField({
-                    id: 'custpage_item_id',
-                    type: ui.FieldType.TEXT,
-                    label: 'ID'
-                });
-                objItemIdField.updateDisplayType({
-                    displayType: ui.FieldDisplayType.HIDDEN
-                });
-                objPlanList.addField({
-                    id: 'custpage_plan_title',
-                    type: ui.FieldType.TEXT,
-                    label: 'Title'
-                });
-                objPlanList.addField({
-                    id: 'custpage_plan_term',
-                    type: ui.FieldType.TEXT,
-                    label: 'Coverage Term (Months)'
-                });
-                objPlanList.addField({
-                    id: 'custpage_plan_price',
-                    type: ui.FieldType.CURRENCY,
-                    label: 'Price'
-                });
-
                 // Add Submit Button
                 objForm.addButton({
                     id: 'custpage_cancel',
@@ -373,13 +337,12 @@ define([
                  * POPULATE SUBLIST
                  */
 
-
                 if (stItemRefId || stLeadToken) {
                     try {
-                        if(stLeadToken){
+                        if (stLeadToken) {
                             var objResponse = EXTEND_API.getLeadOffers(stLeadToken, objConfig);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
-                        }else{
+                        } else {
                             var objResponse = EXTEND_API.getOffers(stItemRefId, objConfig);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
                         }
@@ -389,38 +352,95 @@ define([
                             var objResponseBody = JSON.parse(objResponse.body);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseBody);
 
-                            var arrPlans = objResponseBody.plans.adh;
+                            var arrPlans = objResponseBody.plans.base;
+                            if (EXTEND_UTIL.objectIsEmpty(arrPlans)) {
+                                var arrPlans = objResponseBody.plans.adh;
+                            }
                             log.debug('OFFER MODAL SUITELET: arrPlans', arrPlans);
-                            if (!arrPlans) {
-                                var arrPlans = objResponseBody.plans.base;
-                                if(!arrPlans){
-                                    ///show alert no plans for item
+
+                            //Populate Sublist Values
+                            if (!EXTEND_UTIL.objectIsEmpty(arrPlans)) {
+                                /**
+                                * BUILD SUBLIST
+                                */
+                                // Add plans sublist
+                                var objPlanList = objForm.addSublist({
+                                    id: 'custpage_plans',
+                                    type: ui.SublistType.LIST,
+                                    label: 'Eligble Plans'
+                                });
+                                objPlanList.addField({
+                                    id: 'custpage_select',
+                                    type: ui.FieldType.CHECKBOX,
+                                    label: 'Select'
+                                });
+                                var objItemIdField = objPlanList.addField({
+                                    id: 'custpage_item_id',
+                                    type: ui.FieldType.TEXT,
+                                    label: 'ID'
+                                });
+                                objItemIdField.updateDisplayType({
+                                    displayType: ui.FieldDisplayType.HIDDEN
+                                });
+                                objPlanList.addField({
+                                    id: 'custpage_plan_title',
+                                    type: ui.FieldType.TEXT,
+                                    label: 'Title'
+                                });
+                                objPlanList.addField({
+                                    id: 'custpage_plan_term',
+                                    type: ui.FieldType.TEXT,
+                                    label: 'Coverage Term (Months)'
+                                });
+                                objPlanList.addField({
+                                    id: 'custpage_plan_price',
+                                    type: ui.FieldType.CURRENCY,
+                                    label: 'Price'
+                                });
+                                for (var i = 0; i < arrPlans.length; i++) {
+                                    objPlanList.setSublistValue({
+                                        id: 'custpage_item_id',
+                                        line: i,
+                                        value: arrPlans[i].id
+                                    });
+                                    objPlanList.setSublistValue({
+                                        id: 'custpage_plan_title',
+                                        line: i,
+                                        value: arrPlans[i].title
+                                    });
+                                    objPlanList.setSublistValue({
+                                        id: 'custpage_plan_term',
+                                        line: i,
+                                        value: parseInt(arrPlans[i].contract.termLength)
+                                    });
+                                    objPlanList.setSublistValue({
+                                        id: 'custpage_plan_price',
+                                        line: i,
+                                        value: parseFloat(arrPlans[i].price) / 100
+                                    });
                                 }
                             }
-                            
-                            //Populate Sublist Values
-                            for (var i = 0; i < arrPlans.length; i++) {
-                                objPlanList.setSublistValue({
-                                    id: 'custpage_item_id',
-                                    line: i,
-                                    value: arrPlans[i].id
-                                });
-                                objPlanList.setSublistValue({
-                                    id: 'custpage_plan_title',
-                                    line: i,
-                                    value: arrPlans[i].title
-                                });
-                                objPlanList.setSublistValue({
-                                    id: 'custpage_plan_term',
-                                    line: i,
-                                    value: parseInt(arrPlans[i].contract.termLength)
-                                });
-                                objPlanList.setSublistValue({
-                                    id: 'custpage_plan_price',
-                                    line: i,
-                                    value: parseFloat(arrPlans[i].price) / 100
-                                });
+                            else {
+                                    log.debug('OFFER MODAL SUITELET: No  plans', arrPlans);
+                                    ///show message no plans for item
+                                    var objAlertGroup = objForm.addFieldGroup({
+                                        id: 'custpage_alert',
+                                        label: 'Plan Information'
+                                    });
+                                    var objAlertTextField = objForm.addField({
+                                        id: 'custpage_alert_text',
+                                        type: ui.FieldType.TEXTAREA,
+                                        label: 'Alert:',
+                                        container: 'custpage_alert'
+                                    });
+                                    objAlertTextField.defaultValue = "There are no plans available for the selected item";
+                                    objAlertTextField.updateDisplayType({
+                                        displayType: ui.FieldDisplayType.INLINE
+                                    });
+                                    log.debug('OFFER MODAL SUITELET: objAlertTextField', objAlertTextField);
+
                             }
+
                         }
 
                     } catch (e) {
