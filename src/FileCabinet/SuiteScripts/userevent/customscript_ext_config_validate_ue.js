@@ -135,7 +135,6 @@ define([
 
                             if (fieldArray.indexOf(itemField) == -1) {
                                     log.error('invalid item field id', itemField);
-
                                     objNewRecord.setValue({ fieldId: 'custrecord_ext_ref_id', value: 'internalid' });
                                     //Not working to prevent record from saving
                                     return false;
