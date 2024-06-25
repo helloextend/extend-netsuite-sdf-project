@@ -106,7 +106,7 @@
 
             }
                           console.log('arrItemList', arrItemList);
-
+/*
             var objCartJSON = {}
             objCartJSON = {
                 "currency": "USD",//todo get currency
@@ -115,23 +115,27 @@
             }
             var stCartJSON = JSON.stringify(objCartJSON);
             console.log('stCartJSON', stCartJSON);
+            */
+          var stCartJSON = JSON.stringify(arrItemList);
+                      console.log('stCartJSON', stCartJSON);
+
             _callSuitelet(stCartJSON, stExtendConfigRecId);
         }
 
-        function _callSuitelet(stCartJSON, config) {
-            console.log('config', config);
+        function _callSuitelet(stCartJSON, stExtendConfigRecId) {
+            console.log('config', stExtendConfigRecId);
             //Resolve suitelet URL
             var slUrl = url.resolveScript({
                 scriptId: 'customscript_ext_sp_offer_modal_sl',
                 deploymentId: 'customdeploy_ext_sp_offer_modal_sl',
                 params: {
                     'objCartJSON': stCartJSON,
-                    'config': config,
+                    'config': stExtendConfigRecId,
                 }
             });
             console.log('slUrl', slUrl);
             //Call the pop up suitelet
-            window.open(slUrl, '_blank', 'screenX=300,screenY=300,width=900,height=500,titlebar=0,status=no,menubar=no,resizable=0,scrollbars=0');
+            window.open(slUrl, '_blank', 'screenX=300,screenY=300,width=600,height=500,titlebar=0,status=no,menubar=no,resizable=0,scrollbars=0');
 
         }
         return exports;

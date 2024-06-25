@@ -178,7 +178,6 @@ define([
                                         url: config.domain + '/shipping-offers/config/marketing' + '?storeId=' + config.storeId,
                                         headers: {
                                                 'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
                                                 'Accept': 'application/json;version=' + config.version
                                         }
                                 });
@@ -201,7 +200,6 @@ define([
                                         url: config.domain + '/shipping-offers/config' + '?storeId=' + config.storeId,
                                         headers: {
                                                 'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
                                                 'Accept': 'application/json;version=' + config.version
                                         }
                                 });

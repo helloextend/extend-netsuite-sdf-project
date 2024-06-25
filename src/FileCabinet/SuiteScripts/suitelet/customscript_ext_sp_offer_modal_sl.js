@@ -1,74 +1,4 @@
 /**
- * @NapiVersion 2.x
- * @NScriptType Suitelet 
- * @NAmdConfig ../lib/ReactLibConfig.json
- *//*
-define (['N/ui/serverWidget','N/file','react_lib'] , function(serverWidget,file,react_lib){
-    function onRequest(context){
-        if (context.request.method === "GET"){
-
-            // Creating NetSuite Form on the Suitelet
-            var form = serverWidget.createForm({
-                title: "NetSuite Suitelet Implementation with ReactJS",
-                                  hideNavBar: true
-
-            })
-
-            // Add an inline HTML field 
-            var field1 = form.addField({
-                id: 'custom_inline',
-                type: serverWidget.FieldType.INLINEHTML,
-                label: "Inline"
-            })
-          var field2 = form.addField({
-                id: 'custom_inline2',
-                type: serverWidget.FieldType.INLINEHTML,
-                label: "Inline Cart"
-            })
-          var objCart = [{
-            referenceId: 10000,
-      quantity: 1,
-      purchasePrice: 1999,
-      productName: 'testing'
-          },
-                         {
-                           referenceId: 10000,
-      quantity: 2,
-      purchasePrice: 21999,
-      productName: 'testing'
-                         }]
-      
-field2.defaultValue = JSON.stringify(objCart);
-            var ComponentScript = react_lib.getComponentScript('PartFinder' , 'dynHTML',file)
-            
-            // Add the html 
-            field1.defaultValue = react_lib.getReactIncludes() +  '<div id="dynHTML" />' + ComponentScript
-
-
-// Add Submit Button
-                form.addButton({
-                    id: 'custpage_cancel',
-                    label: 'Cancel',
-                    functionName: 'handleClose()'
-                });
-                form.addSubmitButton('Submit');
-          
-            context.response.writePage(form)
-        }
-    }
-    return {
-        onRequest: onRequest
-    }
-})
-
-*/
-
-
-
-
-
-
-/**
  *@name: EXTEND SUITESCRIPT SDK - SP Offer Modal Suitelet
  *@description:
  *  Suitelet called by Sales Order client script to display shpping protection offer
@@ -84,10 +14,10 @@ field2.defaultValue = JSON.stringify(objCart);
  *@NModuleScope Public
  *@NAmdConfig ../lib/ReactLibConfig.json
  */
- define([
+define([
     'N/ui/serverWidget',
     'N/runtime',
-  'N/file',
+    'N/file',
     'N/http',
     'N/error',
     'N/log',
@@ -116,8 +46,8 @@ field2.defaultValue = JSON.stringify(objCart);
 
 
         function _handleGet(context) {
-            _renderReactForm(context);
-           // _renderForm(context);
+            // _renderReactForm(context);
+            _renderForm(context);
         }
         // Post Handler
         function _handlePost(context) {
@@ -125,42 +55,22 @@ field2.defaultValue = JSON.stringify(objCart);
                 log.debug('POST: Context Object', JSON.stringify(context));
 
                 var objRequest = context.request;
-
                 var objExtendItem = {};
-
-                var stPlanCount = objRequest.getLineCount({ group: 'custpage_plan' });
-
-                // objExtendItem.stWarrantyItemId = runtime.getCurrentScript().getParameter({ name: 'custscript_ext_protection_plan' });
-                //var extendConfigRec =
-                objExtendItem.stWarrantyItemId = JSON.parse(objRequest.parameters.custpage_config).product_plan_item;
-
-                //Line Number
-                // var stProductLine = objRequest.parameters.custpage_line_num;
-                // log.debug('POST: Product Line', stProductLine);
-
-                objExtendItem.stItemId = objRequest.parameters.custpage_item_select;
-                objExtendItem.stItemName = objRequest.parameters.custpage_item_name.trim();
-                objExtendItem.stItemQty = objRequest.parameters.custpage_item_qty;
-                objExtendItem.stRefId = objRequest.parameters.custpage_item_ref_id;
-                objExtendItem.stLeadToken = objRequest.parameters.custpage_lead_input;
-                objExtendItem.stPlanId = '';
-                objExtendItem.stPrice = 0;
+                objExtendItem.stSPItemId = objRequest.parameters.custpage_shipping_plan_item;
+                objExtendItem.stQuoteId = objRequest.parameters.custpage_quote_text;
+                objExtendItem.stPrice = objRequest.parameters.custpage_premium_text
                 objExtendItem.stDescription = 'Extend Shipping Protection';
+                log.debug('POST objExtendItem', objExtendItem);
 
-                // Get line information from selected line
-                for (var i = 0; i < stPlanCount; i++) {
-
-                    var bSelected = objRequest.getSublistValue({ group: 'custpage_plans', name: 'custpage_select', line: i }) == "T" ? true : false;
-
-                    if (bSelected) {
-                        objExtendItem.stPrice = objRequest.getSublistValue({ group: 'custpage_plans', name: 'custpage_plan_price', line: i });
-                        objExtendItem.stDescription = _getDescription(objExtendItem.stTerm);
-                        objExtendItem.stDescription += ' | ' + objExtendItem.stItemName;
-                        break;
-                    }
-                }
-                log.debug('objExtendItem', objExtendItem);
-
+                /*            //if sublist to display plan   
+                                for (var i = 0; i < stPlanCount; i++) {
+                                    var bSelected = objRequest.getSublistValue({ group: 'custpage_plans', name: 'custpage_select', line: i }) == "T" ? true : false;
+                                    if (bSelected) {
+                                        objExtendItem.stPrice = objRequest.getSublistValue({ group: 'custpage_plans', name: 'custpage_plan_price', line: i });
+                                        break;
+                                    }
+                                }
+                                */
                 var html = _buildhtml(objExtendItem);
                 // Write repsponse
                 context.response.write(html);
@@ -204,53 +114,53 @@ field2.defaultValue = JSON.stringify(objCart);
             });
         };
         //Build React Suitelet Form
-        function _renderReactForm(context){
-                          log.debug('GET context', context);
-          log.debug('GET Params', context.request.parameters);
-                // Get plans and populate sublist
-                log.debug('objCartJSON', context.request.parameters.objCartJSON + typeof context.request.parameters.objCartJSON);
-                var stArrCartJSON = context.request.parameters.objCartJSON;
-                var stConfigRec = context.request.parameters.config;
-                var objConfig = EXTEND_CONFIG.getConfig(stConfigRec);
-                log.debug('objConfig ' + typeof objConfig, objConfig);
-var stStoreId = objConfig.storeId;
-          // Create the form
-                var objForm = ui.createForm({
-                    title: 'Extend Shipping Protection',
-                    hideNavBar: true
-                });
-                // Add an inline HTML field
-                var testField = objForm.addField({
-                    id: 'custom_inline',
-                    type: ui.FieldType.INLINEHTML,
-                    label: 'Inline'
-                });
-var testField2 = objForm.addField({
-                    id: 'custom_inline2',
-                    type: ui.FieldType.INLINEHTML,
-                    label: 'Inline CART'
-                });
-          var testField3 = objForm.addField({
-                    id: 'custom_inline3',
-                    type: ui.FieldType.INLINEHTML,
-                    label: 'Inline CONFIG'
-                }); 
-testField2.defaultValue = stArrCartJSON;
-          testField3.defaultValue = stStoreId;
-// Add Submit Button
-                objForm.addButton({
-                    id: 'custpage_cancel',
-                    label: 'Cancel',
-                    functionName: 'handleClose()'
-                });
-                objForm.addSubmitButton('Submit');
-                    
-          var componentScript = react_lib.getComponentScript('PartFinder', 'dynHTML', file);
-                                              log.debug('componentScript', componentScript);
+        function _renderReactForm(context) {
+            log.debug('GET context', context);
+            log.debug('GET Params', context.request.parameters);
+            // Get plans and populate sublist
+            log.debug('objCartJSON', context.request.parameters.objCartJSON + typeof context.request.parameters.objCartJSON);
+            var stArrCartJSON = context.request.parameters.objCartJSON;
+            var stConfigRec = context.request.parameters.config;
+            var objConfig = EXTEND_CONFIG.getConfig(stConfigRec);
+            log.debug('objConfig ' + typeof objConfig, objConfig);
+            var stStoreId = objConfig.storeId;
+            // Create the form
+            var objForm = ui.createForm({
+                title: 'Extend Shipping Protection',
+                hideNavBar: true
+            });
+            // Add an inline HTML field
+            var testField = objForm.addField({
+                id: 'custom_inline',
+                type: ui.FieldType.INLINEHTML,
+                label: 'Inline'
+            });
+            var testField2 = objForm.addField({
+                id: 'custom_inline2',
+                type: ui.FieldType.INLINEHTML,
+                label: 'Inline CART'
+            });
+            var testField3 = objForm.addField({
+                id: 'custom_inline3',
+                type: ui.FieldType.INLINEHTML,
+                label: 'Inline CONFIG'
+            });
+            testField2.defaultValue = stArrCartJSON;
+            testField3.defaultValue = stStoreId;
+            // Add Submit Button
+            objForm.addButton({
+                id: 'custpage_cancel',
+                label: 'Cancel',
+                functionName: 'handleClose()'
+            });
+            objForm.addSubmitButton('Submit');
 
-                // Add the html
-                testField.defaultValue = react_lib.getReactIncludes() + '<div id="dynHTML" />' + componentScript;
-                context.response.writePage(objForm);
+            var componentScript = react_lib.getComponentScript('PartFinder', 'dynHTML', file);
+            log.debug('componentScript', componentScript);
+
+            // Add the html
+            testField.defaultValue = react_lib.getReactIncludes() + '<div id="dynHTML" />' + componentScript;
+            context.response.writePage(objForm);
         };
         // Builds Suitelet Form
         function _renderForm(context) {
@@ -258,19 +168,24 @@ testField2.defaultValue = stArrCartJSON;
                 log.debug('GET Params', context.request.parameters);
                 // Get plans and populate sublist
                 log.debug('objCartJSON', context.request.parameters.objCartJSON + typeof context.request.parameters.objCartJSON);
-                var objCartJSON = {};
+                var objCartJSON = [];
                 objCartJSON = JSON.parse(context.request.parameters.objCartJSON);
                 var stConfigRec = JSON.parse(context.request.parameters.config);
                 var objConfig = EXTEND_CONFIG.getConfig(stConfigRec);
                 log.debug('objConfig ' + typeof objConfig, objConfig);
-
+                var objSPJSON = {};
+                objSPJSON = {
+                    currency: 'USD',
+                    storeId: objConfig.storeId,
+                    items: objCartJSON
+                }
 
                 // Create the form
                 var objForm = ui.createForm({
                     title: 'Extend Shipping Protection',
                     hideNavBar: true
                 });
-                
+
                 /**
                  * HEADER FIELDS
                  */
@@ -304,13 +219,13 @@ testField2.defaultValue = stArrCartJSON;
                 //Telesales Script Group
                 var objScriptGroup = objForm.addFieldGroup({
                     id: 'custpage_script',
-                    label: 'Telesales Script'
+                    label: 'Shipping Protection Information'
                 });
                 //OFFER TELESALES ASK SCRIPT
                 var objOfferTextField = objForm.addField({
                     id: 'custpage_offer_text',
                     type: ui.FieldType.TEXTAREA,
-                    label: 'Customer Ask:',
+                    label: 'Covers lost, stolen or damaged packages.',
                     container: 'custpage_script'
                 });
                 objOfferTextField.updateBreakType({
@@ -319,8 +234,30 @@ testField2.defaultValue = stArrCartJSON;
                 objOfferTextField.updateDisplayType({
                     displayType: ui.FieldDisplayType.INLINE
                 });
+                objOfferTextField.defaultValue = 'Stop planning your day around a delivery. 24/7 online support, hassle-free replacements, no additional fees.'
+                var objLearnMoreField = objForm.addField({
+                    id: 'custpage_learnmore_text',
+                    type: ui.FieldType.URL,
+                    label: 'Learn More.',
+                    container: 'custpage_script'
+                });
+                objLearnMoreField.updateDisplayType({
+                    displayType: ui.FieldDisplayType.INLINE
+                });
+                var objDisclaimerTextField = objForm.addField({
+                    id: 'custpage_disclaimer_text',
+                    type: ui.FieldType.TEXTAREA,
+                    label: 'Disclaimer.',
+                    container: 'custpage_script'
+                });
+                objDisclaimerTextField.updateBreakType({
+                    breakType: ui.FieldBreakType.STARTCOL
+                });
+                objDisclaimerTextField.updateDisplayType({
+                    displayType: ui.FieldDisplayType.INLINE
+                });
                 //todo script text update
-                objOfferTextField.defaultValue = "We have several protection plans available for your purchase \n These protection plans cover accidental damage in addition to standard defects \n Would you be interested in protecting your purchase with us today? \n <custom training text available>";
+               // objOfferTextField.defaultValue = "Disclaimer: x \n y\n z \n <custom training text available>";
                 //Next Steps Group
                 var objProcessGroup = objForm.addFieldGroup({
                     id: 'custpage_process',
@@ -341,10 +278,95 @@ testField2.defaultValue = stArrCartJSON;
                 });
                 objProcessScript.defaultValue = "1. Inform the customer of the plan offering using the compliant script above \n 3. Click on the blue 'Add Plan' button to add the shipping protection plan and return to the order \n 4. If the customer does not want a shipping protection plan, simply click cancel";
 
-                var objItemGroup = objForm.addFieldGroup({
-                    id: 'custpage_item',
-                    label: 'Item'
-                });
+
+                try {
+                    /*
+                    var objResponseMarketing = EXTEND_API.getSPMarketing(objConfig);
+                    log.debug('OFFER MODAL SUITELET: Offers JSON Response Marketing', objResponseMarketing);
+                    if (objResponseMarketing.code == 200) {
+                        var objMarketingResponseBody = JSON.parse(objResponseMarketing.body);
+                        log.debug('OFFER MODAL SUITELET: Offers JSON Response Body Config', objMarketingResponseBody);
+                    }
+                    */
+                    var objResponseConfig = EXTEND_API.getSPConfig(objConfig);
+                    log.debug('OFFER MODAL SUITELET: Offers JSON Response Config', objResponseConfig);
+                    if (objResponseConfig.code == 200) {
+                        var objResponseBody = JSON.parse(objResponseConfig.body);
+                        log.debug('OFFER MODAL SUITELET: Offers JSON Response Body Config', objResponseBody);
+                        var objResponseBodyMarketing = objResponseBody.marketing;
+                        log.debug('OFFER MODAL SUITELET: objResponseBodyMarketing', objResponseBodyMarketing);
+                        objDisclaimerTextField.defaultValue = objResponseBodyMarketing.learnMoreModal.disclaimerText;
+                        objLearnMoreField.defaultValue = objResponseBodyMarketing.learnMoreModal.planDetailLink
+
+
+
+                    }
+
+                } catch (e) {
+                    log.debug('error', e);
+                }
+
+                try {
+                    var objResponse = EXTEND_API.getSPOffers(objSPJSON, objConfig);
+                    log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
+
+
+                    if (objResponse.code == 200) {
+                        var objQuoteResponseBody = JSON.parse(objResponse.body);
+                        log.debug('OFFER MODAL SUITELET: Offers JSON Response', objQuoteResponseBody);
+                        var formattedPremium = (objQuoteResponseBody.premium / 100).toFixed(2)
+
+                        ///show  plans details
+                        var objPlanGroup = objForm.addFieldGroup({
+                            id: 'custpage_sp_plan',
+                            label: 'Plan Information'
+                        });
+                        var objPlanField = objForm.addField({
+                            id: 'custpage_plan_text',
+                            type: ui.FieldType.TEXT,
+                            label: 'Plan:',
+                            container: 'custpage_sp_plan'
+                        });
+                        var objQuoteIdField = objForm.addField({
+                            id: 'custpage_quote_text',
+                            type: ui.FieldType.TEXT,
+                            label: 'Quote ID:',
+                            container: 'custpage_sp_plan'
+                        });
+                        var objPremiumField = objForm.addField({
+                            id: 'custpage_premium_text',
+                            type: ui.FieldType.CURRENCY,
+                            label: 'Premium:',
+                            container: 'custpage_sp_plan'
+                        });
+                        var objSPItemField = objForm.addField({
+                            id: 'custpage_shipping_plan_item',
+                            type: ui.FieldType.TEXT,
+                            label: 'Shipping Item',
+                            container: 'custpage_sp_plan'
+                        });
+                        objPlanField.defaultValue = objQuoteResponseBody;
+                        objQuoteIdField.defaultValue = objQuoteResponseBody.id;
+                        objPremiumField.defaultValue = formattedPremium;
+                        objSPItemField.defaultValue = objConfig.shipping_plan_item;
+                        objPlanField.updateDisplayType({
+                            displayType: ui.FieldDisplayType.HIDDEN
+                        });
+                        objQuoteIdField.updateDisplayType({
+                            displayType: ui.FieldDisplayType.HIDDEN
+                        });
+                        objSPItemField.updateDisplayType({
+                            displayType: ui.FieldDisplayType.HIDDEN
+                        });
+                        objPremiumField.updateDisplayType({
+                            displayType: ui.FieldDisplayType.INLINE
+                        });
+
+                    }
+
+                } catch (e) {
+                    log.debug('error', e);
+                }
 
                 // Add Submit Button
                 objForm.addButton({
@@ -353,40 +375,6 @@ testField2.defaultValue = stArrCartJSON;
                     functionName: 'handleClose()'
                 });
                 objForm.addSubmitButton('Add Plan');
-                /**
-                 * POPULATE SUBLIST
-                 */
-                try {
-                    var objResponse = EXTEND_API.getSPOffers(objCartJSON, objConfig);
-                    log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
-
-
-                    if (objResponse.code == 200) {
-                        var objResponseBody = JSON.parse(objResponse.body);
-                        log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseBody);
-
-                    }
-
-                } catch (e) {
-                    log.debug('error', e);
-                }
-
-                try {
-                    var objResponseMarketing = EXTEND_API.getSPMarketing(objConfig);
-                    log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseMarketing);
-
-                    var objResponseConfig = EXTEND_API.getSPMarketing(objConfig);
-                    log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseConfig);
-                    if (objResponseConfig.code == 200) {
-                        var objResponseBody = JSON.parse(objResponseConfig.body);
-                        log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseBody);
-
-                    }
-
-                } catch (e) {
-                    log.debug('error', e);
-                }
-
                 //Set Client handler
                 objForm.clientScriptModulePath = '../client/customscript_ext_sp_offer_modal_controller.js';
                 //Write Page
