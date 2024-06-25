@@ -9,7 +9,7 @@ define([
 ],
 
         //todo add additional extend API calls
-        function (https, extendConfig) {
+        function (https, EXTEND_CONFIG) {
 
                 var exports = {};
 

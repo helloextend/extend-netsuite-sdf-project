@@ -5,7 +5,7 @@
   <notifyadmins>F</notifyadmins>
   <notifyemails></notifyemails>
   <notifyowner>T</notifyowner>
-  <scriptfile>[/SuiteScripts/mapreduce/customscript_ext_refund_contract_mr.js]</scriptfile>
+  <scriptfile>[/SuiteScripts/ExtendSDK/mapreduce/customscript_ext_refund_contract_mr.js]</scriptfile>
   <scriptcustomfields>
     <scriptcustomfield scriptid="custscript_ext_refund_search">
       <accesslevel>2</accesslevel>
@@ -66,7 +66,7 @@
     <scriptdeployment scriptid="customdeploy_ext_refund_create_mr">
       <buffersize>1</buffersize>
       <concurrencylimit>1</concurrencylimit>
-      <custscript_ext_config_record>[ACCOUNT_SPECIFIC_VALUE]</custscript_ext_config_record>
+      <custscript_ext_config_record>[scriptid=customrecord_ext_configuration.val_1730589_5517624_sb1_571]</custscript_ext_config_record>
       <custscript_ext_refund_search>[scriptid=customsearch_ext_order_refund]</custscript_ext_refund_search>
       <isdeployed>T</isdeployed>
       <loglevel>DEBUG</loglevel>

@@ -37,9 +37,9 @@
                  const objForm = context.form;
                  objForm.clientScriptModulePath = '../client/customscript_ext_sp_offer_controller_cs.js';
                  objForm.addButton({
-                         id : 'custpage_open_suitelet',
+                         id : 'custpage_open_sp_suitelet',
                          label: 'Add Shipping Protection Plan',
-                         functionName: 'openSuitelet()'
+                         functionName: 'openSPSuitelet()'
                  });
          } catch (error)
          {

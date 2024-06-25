@@ -11,9 +11,10 @@
  *@NModuleScope Public
  */
 define(['N/url',
-        '../lib/customscript_ext_util'
+        '../lib/customscript_ext_util',
+        '../lib/customscript_ext_support'
     ],
-    function (url, EXTEND_UTIL) {
+    function (url, EXTEND_UTIL, EXTEND_SUPPORT) {
         var exports = {};
         exports.fieldChanged = function (context) {
 
@@ -96,7 +97,7 @@ define(['N/url',
             var stItemRefId;
 
 
-            if (!EXTEND_UTIL.objectIsEmpty(stItemId)) {
+            if (!EXTEND_SUPPORT.objectIsEmpty(stItemId)) {
                 var arrItemList = JSON.parse(stItemList);
                 //var stItemQty = arrItemList.find(x => x.id === stItemId).quantity;
                 var objItem = _searchArray(stItemId, 'id', arrItemList);
@@ -143,7 +144,7 @@ define(['N/url',
             var stItemPrice;
             var stItemCategory;
 
-            if (!EXTEND_UTIL.objectIsEmpty(stItemId)) {
+            if (!EXTEND_SUPPORT.objectIsEmpty(stItemId)) {
                 var arrItemList = JSON.parse(stItemList);
                 //var stItemQty = arrItemList.find(x => x.id === stItemId).quantity;
                 var objItem = _searchArray(stItemId, 'id', arrItemList);

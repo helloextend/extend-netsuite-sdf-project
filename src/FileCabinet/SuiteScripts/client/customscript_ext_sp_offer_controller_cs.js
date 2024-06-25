@@ -12,7 +12,7 @@
  *@NScriptType ClientScript
  *@NModuleScope Public
  */
-define([
+ define([
     'N/url',
     'N/runtime',
     'N/search',
@@ -26,8 +26,8 @@ define([
         exports.pageInit = function () {
 
         };
-        exports.openSuitelet = function (context) {
-            console.log('Open Suitelet', context);
+        exports.openSPSuitelet = function (context) {
+            console.log('Open Suitelet SP', context);
 
             var objCurrentRecord = currentRecord.get();
             //create item array
@@ -38,7 +38,7 @@ define([
             });
             console.log('linecount', linecount);
             console.log('config', 'getting.....');
-            var stExtendConfigRecId = runtime.getCurrentScript().getParameter('custscript_ext_config_rec_cs');
+            var stExtendConfigRecId = runtime.getCurrentScript().getParameter('custscript_ext_config_rec_global');
             var objExtendConfig = EXTEND_CONFIG.getConfig(stExtendConfigRecId);
             console.log('config', objExtendConfig);
 
@@ -66,16 +66,19 @@ define([
                 });
                 var intPrice = parseInt(objCurrentRecord.getSublistValue({
                     sublistId: stSublistId,
-                    fieldId: 'rate'
+                    fieldId: 'rate',
+                  line: i
                 }) * 100);
                 if (!intPrice || intPrice == 0) {
                     intPrice = parseInt(((objCurrentRecord.getSublistValue({ sublistId: stSublistId, fieldId: 'amount', line: i }) / intQty).toFixed(2)) * 100);
                 }
+            console.log('intPrice', intPrice);
 
                 var stItemRefId = EXTEND_UTIL.getItemRefId(stItemId, objExtendConfig);
                 var stItemCategory = EXTEND_UTIL.getItemCategory(stItemId, objExtendConfig);
+            console.log('stItemRefId', stItemRefId);
 
-                var objItem = {};
+                // var objItem = {};
                 /*
                 objItem.id = stItemId;
                 objItem.name = stItemName;
@@ -84,7 +87,7 @@ define([
                 objItem.price = intPrice;
                 objItem.refId = stItemRefId;
                 */
-                objItem = {
+                var objItem = {
                     'referenceId': stItemRefId,
                     'quantity': intQty,
                     'productName': stItemName,
@@ -92,12 +95,17 @@ define([
                     'category': stItemCategory,
                     'shippable': 'true'
                 }
+                          console.log('objItem', objItem);
+
                 //push to array
                 // If item is not a extend item, push to array
                 if (stExtendItem != stItemId && stExtendSPItem != stItemId) {
                     arrItemList.push(objItem);
                 }
+                          console.log('arrItemList', arrItemList);
+
             }
+                          console.log('arrItemList', arrItemList);
 
             var objCartJSON = {}
             objCartJSON = {
@@ -114,8 +122,8 @@ define([
             console.log('config', config);
             //Resolve suitelet URL
             var slUrl = url.resolveScript({
-                scriptId: 'customscript_ext_sp_offer_sl',
-                deploymentId: 'customdeploy_ext_sp_offer_sl',
+                scriptId: 'customscript_ext_sp_offer_modal_sl',
+                deploymentId: 'customdeploy_ext_sp_offer_modal_sl',
                 params: {
                     'objCartJSON': stCartJSON,
                     'config': config,

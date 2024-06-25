@@ -11,9 +11,10 @@
  *@NModuleScope Public
  */
  define(['N/url',
- '../lib/customscript_ext_util'
+ '../lib/customscript_ext_util',
+ '../lib/customscript_ext_support'
 ],
-function (url, EXTEND_UTIL) {
+function (url, EXTEND_UTIL, EXTEND_SUPPORT) {
  var exports = {};
  exports.fieldChanged = function (context) {
 
@@ -96,7 +97,7 @@ function (url, EXTEND_UTIL) {
      var stItemRefId;
 
 
-     if (!EXTEND_UTIL.objectIsEmpty(stItemId)) {
+     if (!EXTEND_SUPPORT.objectIsEmpty(stItemId)) {
          var arrItemList = JSON.parse(stItemList);
          //var stItemQty = arrItemList.find(x => x.id === stItemId).quantity;
          var objItem = _searchArray(stItemId, 'id', arrItemList);
@@ -140,7 +141,7 @@ function (url, EXTEND_UTIL) {
      var stLineNum;
      var stItemRefId;
 
-     if (!EXTEND_UTIL.objectIsEmpty(stItemId)) {
+     if (!EXTEND_SUPPORT.objectIsEmpty(stItemId)) {
          var arrItemList = JSON.parse(stItemList);
          //var stItemQty = arrItemList.find(x => x.id === stItemId).quantity;
          var objItem = _searchArray(stItemId, 'id', arrItemList);
