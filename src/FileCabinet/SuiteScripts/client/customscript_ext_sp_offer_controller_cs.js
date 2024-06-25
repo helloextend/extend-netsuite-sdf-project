@@ -119,6 +119,9 @@
           var stCartJSON = JSON.stringify(arrItemList);
                       console.log('stCartJSON', stCartJSON);
 
+//check for eligibility....address?
+
+
             _callSuitelet(stCartJSON, stExtendConfigRecId);
         }
 

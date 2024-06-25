@@ -26,6 +26,7 @@ function (url, EXTEND_UTIL, EXTEND_SUPPORT) {
      var objCurrentRec = context.currentRecord;
      log.debug('saveRecord client');
      console.log('saveRec function', context);
+     return true;
 
  };
  exports.handleClose = function () {
