@@ -20,8 +20,8 @@ define(['N/url',
             console.log('Event Handler', context);
             const objEventRouter = {
                 'custpage_select': _handleSelectInput,
-                'custpage_item_select': _handleItemInput,
-                'custpage_lead_input': _handleLeadInput
+                'custpage_item_select': _handleInput,
+                'custpage_lead_input': _handleInput
             }
             console.log('objEventRouter', objEventRouter);
 
@@ -82,53 +82,7 @@ define(['N/url',
 
             return true;
         }
-        function _handleItemInput(context) {
-            //update sublist on item field change
-            var objCurrentRec = context.currentRecord;
-            var stItemId = objCurrentRec.getValue({ fieldId: 'custpage_item_select' });
-            console.log('stItemId', stItemId);
-            var stItemName = objCurrentRec.getText({ fieldId: 'custpage_item_select' });
-            var stItemList = objCurrentRec.getValue({ fieldId: 'custpage_item_list' });
-            var stConfigRec = objCurrentRec.getValue({ fieldId: 'custpage_config' });
-            var stLeadToken = objCurrentRec.getValue({ fieldId: 'custpage_lead_input' });
-            var stItemQty;
-            var stLineNum;
-            var stItemRefId;
-
-
-            if (!EXTEND_UTIL.objectIsEmpty(stItemId)) {
-                var arrItemList = JSON.parse(stItemList);
-                //var stItemQty = arrItemList.find(x => x.id === stItemId).quantity;
-                var objItem = _searchArray(stItemId, 'id', arrItemList);
-                stItemQty = objItem.qty;
-                stLineNum = objItem.line;
-                stItemRefId = objItem.refId;
-            }
-
-            var URL = url.resolveScript({
-                scriptId: 'customscript_ext_offer_presentation_sl',
-                deploymentId: 'customdeploy_ext_offer_presentation_sl',
-                params: {
-                    'itemid': stItemId,
-                    'itemtext': stItemName,
-                    'arrItemid': stItemList,
-                    'line': stLineNum,
-                    'quantity': stItemQty,
-                    'refid': stItemRefId,
-                    'config': stConfigRec,
-                    'leadToken': stLeadToken
-                }
-            });
-
-            //avoid the standard NetSuite warning message when navigating away
-            if (window.onbeforeunload) {
-                window.onbeforeunload = function () { null; };
-            };
-            //refresh window
-            window.open(URL, '_self', false);
-            return true;
-        }
-        function _handleLeadInput(context) {
+        function _handleInput(context) {
             //update sublist on item field change
             var objCurrentRec = context.currentRecord;
             var stLeadToken = objCurrentRec.getValue({ fieldId: 'custpage_lead_input' });
