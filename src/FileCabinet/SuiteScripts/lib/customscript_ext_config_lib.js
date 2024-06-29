@@ -86,6 +86,7 @@ function (runtime, search) {
 
                 var objExtendConfig = {
                         storeId: STORE_ID,
+                        environment: ENVIRONMENT,
                         key: API_KEY,
                         domain: DOMAIN,
                         version: API_VERSION,

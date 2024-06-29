@@ -166,16 +166,15 @@ define([
                 var arrItemList = [];
                 arrItemList = JSON.parse(context.request.parameters.arrItemid);
                 var stItemInternalId = context.request.parameters.itemid;
-                var objItem = {};
-                objItem.id = context.request.parameters.refid;
-                objItem.price = context.request.parameters.price;
-                objItem.category = context.request.parameters.category;
+                var stItemRefId = context.request.parameters.refid;
                 var stLeadToken = context.request.parameters.leadToken;
                 var stConfigRec = JSON.parse(context.request.parameters.config);
                 var objConfig = EXTEND_CONFIG.getConfig(stConfigRec);
-                log.debug('objItem', objItem);
+                log.debug('stItemRefId', stItemRefId);
                 log.debug('stLeadToken', stLeadToken);
                 log.debug('objConfig ' + typeof objConfig, objConfig);
+
+
                 // Create the form
                 var objForm = ui.createForm({
                     title: 'Extend Protection Plans',
@@ -338,26 +337,24 @@ define([
                  * POPULATE SUBLIST
                  */
 
-                if (objItem.id || stLeadToken) {
+                if (stItemRefId || stLeadToken) {
                     try {
                         if (stLeadToken) {
                             var objResponse = EXTEND_API.getLeadOffers(stLeadToken, objConfig);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
                         } else {
-                            var objResponse = EXTEND_API.getOffers(objItem, objConfig);
+                            var objResponse = EXTEND_API.getOffers(stItemRefId, objConfig);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponse);
                         }
+
 
                         if (objResponse.code == 200) {
                             var objResponseBody = JSON.parse(objResponse.body);
                             log.debug('OFFER MODAL SUITELET: Offers JSON Response', objResponseBody);
 
                             var arrPlans = objResponseBody.plans.base;
-                            log.debug('OFFER MODAL SUITELET: arrPlans', arrPlans);
-
-                            if (EXTEND_UTIL.objectIsEmpty(arrPlans) || !arrPlans) {
+                            if (EXTEND_UTIL.objectIsEmpty(arrPlans)) {
                                 var arrPlans = objResponseBody.plans.adh;
-                                log.debug('OFFER MODAL SUITELET: arrPlans', arrPlans);
                             }
                             log.debug('OFFER MODAL SUITELET: arrPlans', arrPlans);
 

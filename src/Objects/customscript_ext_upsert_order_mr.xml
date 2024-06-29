@@ -5,7 +5,7 @@
   <notifyadmins>F</notifyadmins>
   <notifyemails></notifyemails>
   <notifyowner>T</notifyowner>
-  <scriptfile>[/SuiteScripts/mapreduce/customscript_ext_upsert_order.js]</scriptfile>
+  <scriptfile>[/SuiteScripts/ExtendSDK/mapreduce/customscript_ext_upsert_order.js]</scriptfile>
   <scriptcustomfields>
     <scriptcustomfield scriptid="custscript_ext_order_search">
       <accesslevel>2</accesslevel>
@@ -63,17 +63,17 @@
     </scriptcustomfield>
   </scriptcustomfields>
   <scriptdeployments>
-    <scriptdeployment scriptid="customdeploy_ext_upsert_order_mr">
+    <scriptdeployment scriptid="customdeploy_ext_upsert_order_mr_demand">
       <buffersize>1</buffersize>
       <concurrencylimit>1</concurrencylimit>
-      <custscript_ext_config_rec>[ACCOUNT_SPECIFIC_VALUE]</custscript_ext_config_rec>
-      <custscript_ext_order_search>[scriptid=customsearch_ext_order_search]</custscript_ext_order_search>
+      <custscript_ext_config_rec>[scriptid=customrecord_ext_configuration.val_1730589_5517624_sb1_571]</custscript_ext_config_rec>
+      <custscript_ext_order_search>[scriptid=customsearch1900]</custscript_ext_order_search>
       <isdeployed>T</isdeployed>
       <loglevel>DEBUG</loglevel>
       <queueallstagesatonce>T</queueallstagesatonce>
       <runasrole>ADMINISTRATOR</runasrole>
       <status>NOTSCHEDULED</status>
-      <title>Extend | MR | Upsert Order</title>
+      <title>Extend | MR | Upsert Order - On Demand</title>
       <yieldaftermins>60</yieldaftermins>
       <recurrence>
         <single>
@@ -83,17 +83,17 @@
         </single>
       </recurrence>
     </scriptdeployment>
-    <scriptdeployment scriptid="customdeploy_ext_upsert_order_mr_demand">
+    <scriptdeployment scriptid="customdeploy_ext_upsert_order_mr">
       <buffersize>1</buffersize>
       <concurrencylimit>1</concurrencylimit>
-      <custscript_ext_config_rec></custscript_ext_config_rec>
-      <custscript_ext_order_search></custscript_ext_order_search>
+      <custscript_ext_config_rec>[scriptid=customrecord_ext_configuration.val_1730589_5517624_sb1_571]</custscript_ext_config_rec>
+      <custscript_ext_order_search>[scriptid=customsearch_ext_order_search]</custscript_ext_order_search>
       <isdeployed>T</isdeployed>
       <loglevel>DEBUG</loglevel>
       <queueallstagesatonce>T</queueallstagesatonce>
       <runasrole>ADMINISTRATOR</runasrole>
       <status>NOTSCHEDULED</status>
-      <title>Extend | MR | Upsert Order - On Demand</title>
+      <title>Extend | MR | Upsert Order</title>
       <yieldaftermins>60</yieldaftermins>
       <recurrence>
         <single>

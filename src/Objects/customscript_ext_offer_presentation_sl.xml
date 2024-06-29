@@ -6,7 +6,7 @@
   <notifyemails></notifyemails>
   <notifyowner>T</notifyowner>
   <notifyuser>F</notifyuser>
-  <scriptfile>[/SuiteScripts/suitelet/customscript_ext_offer_modal_sl.js]</scriptfile>
+  <scriptfile>[/SuiteScripts/ExtendSDK/suitelet/customscript_ext_offer_modal_sl.js]</scriptfile>
   <scriptcustomfields>
     <scriptcustomfield scriptid="custscript_ext_environment">
       <accesslevel>2</accesslevel>
@@ -96,9 +96,9 @@
       <allpartners>F</allpartners>
       <allroles>T</allroles>
       <audslctrole></audslctrole>
-      <custscript_ext_configuration>[ACCOUNT_SPECIFIC_VALUE]</custscript_ext_configuration>
-      <custscript_ext_environment>[ACCOUNT_SPECIFIC_VALUE]</custscript_ext_environment>
-      <custscript_ext_protection_plan>[ACCOUNT_SPECIFIC_VALUE]</custscript_ext_protection_plan>
+      <custscript_ext_configuration>[scriptid=customrecord_ext_configuration.val_1730589_5517624_sb1_571]</custscript_ext_configuration>
+      <custscript_ext_environment></custscript_ext_environment>
+      <custscript_ext_protection_plan></custscript_ext_protection_plan>
       <eventtype></eventtype>
       <isdeployed>T</isdeployed>
       <isonline>F</isonline>

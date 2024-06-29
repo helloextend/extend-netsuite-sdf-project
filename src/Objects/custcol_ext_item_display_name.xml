@@ -1,11 +1,11 @@
-<transactioncolumncustomfield scriptid="custcol_ext_plan_term">
+<transactioncolumncustomfield scriptid="custcol_ext_item_display_name">
   <accesslevel>2</accesslevel>
-  <applyformatting>T</applyformatting>
+  <applyformatting>F</applyformatting>
   <colexpense>F</colexpense>
   <colexpensereport>F</colexpensereport>
   <colgrouponinvoices>F</colgrouponinvoices>
   <colinventoryadjustment>F</colinventoryadjustment>
-  <colitemfulfillment>T</colitemfulfillment>
+  <colitemfulfillment>F</colitemfulfillment>
   <colitemfulfillmentorder>F</colitemfulfillmentorder>
   <colitemreceipt>F</colitemreceipt>
   <colitemreceiptorder>F</colitemreceiptorder>
@@ -22,17 +22,17 @@
   <defaultchecked>F</defaultchecked>
   <defaultselection></defaultselection>
   <defaultvalue></defaultvalue>
-  <description></description>
+  <description>This custom column sources the value from the Display Name field on the item record</description>
   <displayheight></displayheight>
   <displaytype>NORMAL</displaytype>
   <displaywidth></displaywidth>
   <dynamicdefault></dynamicdefault>
   <encryptatrest>F</encryptatrest>
-  <fieldtype>INTEGER</fieldtype>
-  <help></help>
+  <fieldtype>TEXT</fieldtype>
+  <help>This custom column sources the value from the Display Name field on the item record</help>
   <isformula>F</isformula>
   <ismandatory>F</ismandatory>
-  <label>Extend Plan Term Length (months)</label>
+  <label>Display Name</label>
   <linktext></linktext>
   <maxlength></maxlength>
   <maxvalue></maxvalue>
@@ -42,7 +42,7 @@
   <selectrecordtype></selectrecordtype>
   <showhierarchy>F</showhierarchy>
   <sourcefilterby></sourcefilterby>
-  <sourcefrom></sourcefrom>
-  <sourcelist></sourcelist>
+  <sourcefrom>STDITEMDISPLAYNAME</sourcefrom>
+  <sourcelist>STDCOLITEM</sourcelist>
   <storevalue>T</storevalue>
 </transactioncolumncustomfield>

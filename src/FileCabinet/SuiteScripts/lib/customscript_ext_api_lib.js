@@ -9,7 +9,6 @@ define([
 
         //todo add additional extend API calls
         function (https) {
-
                 var exports = {};
 
 
