@@ -12,7 +12,7 @@
  *@NApiVersion 2.x
  *@NScriptType Suitelet
  *@NModuleScope Public
- *@NAmdConfig ../lib/ReactLibConfig.json
+ *@NAmdConfig ../react/ReactLibConfig.json
  */
 define([
     'N/ui/serverWidget',
@@ -46,8 +46,8 @@ define([
 
 
         function _handleGet(context) {
-            // _renderReactForm(context);
-            _renderForm(context);
+             _renderReactForm(context); //react extend sdk form
+            //_renderForm(context); //netsuite standard form
         }
         // Post Handler
         function _handlePost(context) {
@@ -137,7 +137,7 @@ define([
             });
             var testField2 = objForm.addField({
                 id: 'custom_inline2',
-                type: ui.FieldType.INLINEHTML,
+                type: ui.FieldType.TEXT,
                 label: 'Inline CART'
             });
             var testField3 = objForm.addField({
@@ -147,6 +147,10 @@ define([
             });
             testField2.defaultValue = stArrCartJSON;
             testField3.defaultValue = stStoreId;
+
+            // testField2.updateDisplayType({
+            //     displayType: ui.FieldDisplayType.HIDDEN
+            // });
             // Add Submit Button
             objForm.addButton({
                 id: 'custpage_cancel',

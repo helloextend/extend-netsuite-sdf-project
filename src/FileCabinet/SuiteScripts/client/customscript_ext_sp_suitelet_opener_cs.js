@@ -1,9 +1,9 @@
 /**
  *@name: EXTEND SUITESCRIPT SDK - Offer Modal Controller
  *@description:
- * Client script that supoorts button on Sales Order. The script
- * checks if the items are protection plan items and calls a popup suitelet
- * for the user to select the appropriate protection plan.
+ * Client script that is called by button click on Sales Order. The script
+ * loops through the items to create a cart object and calls a popup suitelet
+ * for the user to add a shipping protection plan.
  *
  *@copyright Extend, Inc.
  *@author Michael Draper

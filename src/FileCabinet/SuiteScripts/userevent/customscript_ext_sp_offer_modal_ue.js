@@ -41,7 +41,7 @@ define(['N/runtime',
 
                                 if (context.type == 'create' || stRecordStatus == 'Pending Approval' || stRecordStatus == 'Pending Fulfillment') {
                                         const objForm = context.form;
-                                        objForm.clientScriptModulePath = '../client/customscript_ext_sp_offer_controller_cs.js';
+                                        objForm.clientScriptModulePath = '../client/customscript_ext_sp_suitelet_opener_cs.js';
                                         objForm.addButton({
                                                 id: 'custpage_open_sp_suitelet',
                                                 label: 'Add Shipping Protection Plan',
