@@ -5,12 +5,10 @@
  */
 define([
         'N/https',
-        '../lib/customscript_ext_config_lib'
 ],
 
         //todo add additional extend API calls
-        function (https, EXTEND_CONFIG) {
-
+        function (https) {
                 var exports = {};
 
 
@@ -119,11 +117,22 @@ define([
                  * GET OFFERS
                  * API Documentation: https://docs.extend.com/reference/getoffer
                  */
-                exports.getOffers = function (stItemId, config) {
+                exports.getOffers = function (objItem, config) {
                         // var config = extendConfig.getConfig();
                         try {
-                                var response = https.get({
-                                        url: config.domain + '/offers?storeId=' + config.storeId + '&productId=' + stItemId,
+                           var stUrl = config.domain + '/offers?storeId=' + config.storeId + '&productId=' + objItem.id
+                        if(objItem.category){
+                          log.debug('objItem.category', objItem.category);
+
+                                stUrl+= '&category=' + objItem.category;
+                        }if(objItem.price){
+                          log.debug('objItem.price', objItem.price);
+
+                                stUrl+= '&dynamicPricing=true&price=' + objItem.price;
+                        } 
+log.debug('url', stUrl);
+                            var response = https.get({
+                                    url: stUrl,
                                         headers: {
                                                 'Content-Type': 'application/json',
                                                 'X-Extend-Access-Token': config.key,
