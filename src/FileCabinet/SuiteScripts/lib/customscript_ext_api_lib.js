@@ -5,6 +5,7 @@
  */
 define([
             'N/https',
+            '../lib/customscript_ext_config_lib',
             '../lib/customscript_ext_config_lib'
     ],
 
@@ -119,8 +120,15 @@ define([
             exports.getOffers= function (objItem, config) {
                     // var config = extendConfig.getConfig();
                     try {
+                        var stUrl = config.domain + '/offers?storeId=' + config.storeId + '&productId=' + objItem.id
+                        if(objItem.category){
+                                stUrl+= '&category=' + objItem.category;
+                        }if(!EXTEND_SUPPORT.objectIsEmpty(objItem.price)){
+                                stUrl= stUrl + '&price=' + objItem.price;
+                        } 
+log.debug('url', stUrl);
                             var response = https.get({
-                                    url: config.domain + '/offers?storeId=' + config.storeId + '&productId=' + objItem.id + '&category=' + objItem.category + '&price=' + objItem.price,
+                                    url: stUrl
                                     headers: {
                                             'Content-Type': 'application/json',
                                             'X-Extend-Access-Token': config.key,
