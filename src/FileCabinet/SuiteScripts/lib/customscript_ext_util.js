@@ -1,7 +1,7 @@
 /**
  *@name: EXTEND SUITESCRIPT SDK - Models JS
  *@description: Structures the various JSON request bodies to the Extend API
- * @NApiVersion 2.x
+ * @NApiVersion 2.1
  */
 define([
         'N/runtime',
@@ -256,26 +256,25 @@ define([
                                         continue;
                                 }
                                 var stItemId = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'item', line: line });
-                                stUniqueKey = line;
                                 //Check if item is one of the configured extend items
                                 if (stExtendShippingItemId === stItemId) {
-                                        arrExtendItemData[stUniqueKey] = exports.getShipmentLine(objSalesOrderRecord, line, objExtendConfig);
+                                        log.debug('_getExtendData: Extend SP Item Found | Line ', stItemId + ' | ' + line);
+                                        arrExtendItemData[line] = exports.getShipmentLine(objSalesOrderRecord, line, objExtendConfig);
                                 }
-                                if (stExtendProductItemId === stItemId) {
-                                        log.debug('_getExtendData: Item Found | Line ', stItemId + ' | ' + line);
+                                else if (stExtendProductItemId === stItemId) {
+                                        log.debug('_getExtendData: Extend Item Found | Line ', stItemId + ' | ' + line);
                                         //get value of leadtoken column on extend line
                                         var stLeadToken = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_lead_token', line: line });
                                         if (stLeadToken) {
                                                 log.debug('_getExtendData: stLeadToken ', stLeadToken);
-                                                arrExtendItemData[stUniqueKey] = {
+                                                arrExtendItemData[line] = {
                                                         'leadToken': stLeadToken,
                                                         'quantity': stQuantity,
                                                         'lineItemTransactionId': "" + objSalesOrderRecord.id + "-" + line,
                                                 }
-                                                //  objExtendItemData[stUniqueKey] = exports.getLeadLineDetails(objSalesOrderRecord, line, objExtendItemData[stUniqueKey]);
-                                                arrExtendItemData[stUniqueKey] = exports.getPlanLineDetails(objSalesOrderRecord, line, arrExtendItemData[stUniqueKey]);
-                                        }
-                                        else {
+                                                //  objExtendItemData[line] = exports.getLeadLineDetails(objSalesOrderRecord, line, objExtendItemData[line]);
+                                                arrExtendItemData[line] = exports.getPlanLineDetails(objSalesOrderRecord, line, arrExtendItemData[line]);
+                                        } else {
                                                 //get related item from extend line
                                                 var stExtendItemRefId = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_associated_item', line: line });
                                                 var linkedLineNumber = objSalesOrderRecord.findSublistLineWithValue({
@@ -285,37 +284,36 @@ define([
                                                 });
                                                 var stRelatedItem = objSalesOrderRecord.getSublistValue({ sublistId: 'item', fieldId: 'item', line: linkedLineNumber });
                                                 log.debug('_getExtendData: stRelatedItem| stExtendItemRefId ', stRelatedItem + ' | ' + stExtendItemRefId);
-                                                stUniqueKey = linkedLineNumber;
-                                                if (!arrExtendItemData[stUniqueKey]) {
-                                                        arrExtendItemData[stUniqueKey] = {};
+                                                if (!arrExtendItemData[line]) {
+                                                        arrExtendItemData[line] = {};
                                                 }
-                                                arrExtendItemData[stUniqueKey] = exports.getItemLineDetails(objSalesOrderRecord, line, lineItems[line], stExtendItemRefId, objExtendConfig, linkedLineNumber);
-                                                arrExtendItemData[stUniqueKey] = exports.getPlanLineItem(objSalesOrderRecord, line);
+                                                arrExtendItemData[line] = exports.getItemLineDetails(objSalesOrderRecord, line, arrExtendItemData[line], stExtendItemRefId, objExtendConfig, linkedLineNumber);
+                                                arrExtendItemData[line] = exports.getPlanLineDetails(objSalesOrderRecord, line, arrExtendItemData[line]);
 
                                                 if (arrExtendItemData[linkedLineNumber]) {
                                                         delete arrExtendItemData[linkedLineNumber];
                                                 }
 
-                                                arrExtendItemData[stUniqueKey] = exports.getPlanLineDetails(objSalesOrderRecord, line, arrExtendItemData[stUniqueKey]);
-                                                var stRelatedItemID = "" + objSalesOrderRecord.id + "-" + line + "-" + lineNumber;
-                                                arrExtendItemData[stUniqueKey].lineItemID = stRelatedItemID;
+                                                var stRelatedItemID = "" + objSalesOrderRecord.id + "-" + linkedLineNumber + "-" + line;
+                                                arrExtendItemData[line].lineItemTransactionId = stRelatedItemID;
                                                 objSalesOrderRecord.setSublistValue({ sublistId: 'item', fieldId: 'custcol_ext_line_id', line: line, value: stRelatedItemID });
                                         }
                                 }
                                 else {
-                                        if (!arrExtendItemData[stUniqueKey]) {
-                                                arrExtendItemData[stUniqueKey] = {};
+                                        log.debug('_getExtendData: Regular Line Item ', stItemId + ' | ' + line);
+                                        if (!arrExtendItemData[line]) {
+                                                arrExtendItemData[line] = {};
                                         }
-                                        arrExtendItemData[stUniqueKey] = exports.getItemLineDetails(objSalesOrderRecord, line, arrExtendItemData[line], stItemId, objExtendConfig);
-
-                                        if (arrExtendItemData[stUniqueKey].extend_line) {
-                                                arrExtendItemData[stUniqueKey].lineItemID = arrExtendItemData[stUniqueKey].lineItemID + "-" + arrExtendItemData[stUniqueKey].extend_line;
-                                        }
+                                        arrExtendItemData[line] = exports.getItemLineDetails(objSalesOrderRecord, line, arrExtendItemData[line], stItemId, objExtendConfig);
+                                        /*
+                                                                                if (arrExtendItemData[line].extend_line) {
+                                                                                        arrExtendItemData[line].lineItemID = arrExtendItemData[line].lineItemID + "-" + arrExtendItemData[line].extend_line;
+                                                                                }*/
                                 }
-
+                                log.debug('end for loop', line + ' line ' + JSON.stringify(arrExtendItemData[line]));
                         }
-                        //   const filtered = arrExtendItemData.filter(e => e);
-                        return arrExtendItemData;
+                        const filtered = arrExtendItemData.filter(e => e);
+                        return filtered;
                 };
 
                 //get warranty plan line details
