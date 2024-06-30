@@ -7,7 +7,7 @@
  *@copyright Extend, Inc
  *@author Michael Draper
  *
- *@NApiVersion 2.x
+ *@NApiVersion 2.1
  *@NScriptType MapReduceScript
  *@ModuleScope Public
  */
