@@ -24,17 +24,18 @@ define([
                         try {
                                 //build order data obj
                                 var objExtendData = {};
-                                //build array of items
-                                var objExtendItemData = exports.getSalesOrderItemInfo(objSalesOrderRecord, objExtendConfig);
-                                log.audit('EXTEND UTIL _createExtendOrder: objExtendItemData', objExtendItemData);
+
                                 //get SO header data
-                                objExtendData = exports.getSalesOrderInfo(objSalesOrderRecord);
+                                objExtendData = exports.getSalesOrderInfo(objSalesOrderRecord, objExtendConfig);
                                 log.audit('EXTEND UTIL _createExtendOrder: getSalesOrderInfo objExtendData', objExtendData);
+                                //build array of items
+                                objExtendData.lineItems = exports.getSalesOrderItemInfo(objSalesOrderRecord, objExtendConfig);
+                                log.audit('EXTEND UTIL _createExtendOrder: objExtendData line items', objExtendData);
                                 //format items
-                                objExtendData.lineItems = exports.buildExtendItemJSON(objExtendItemData, objExtendConfig);
+                                // objExtendData.lineItems = exports.buildExtendItemJSON(objExtendItemData, objExtendConfig);
                                 log.audit('EXTEND UTIL _createExtendOrder: objExtendData', objExtendData);
                                 //call api
-                                var objExtendResponse = EXTEND_API.upsertOrder(objExtendItemData, objExtendConfig);
+                                var objExtendResponse = EXTEND_API.upsertOrder(objExtendData, objExtendConfig);
                                 log.audit('EXTEND UTIL _createExtendOrder: Extend Response Object: ', objExtendResponse);
                                 //handle response
                                 if (objExtendResponse.code === 201 || objExtendResponse.code === 200) {
@@ -210,7 +211,7 @@ define([
                         }
                 };
                 //get Sales Order Info required for contract create
-                exports.getSalesOrderInfo = function (objSalesOrderRecord) {
+                exports.getSalesOrderInfo = function (objSalesOrderRecord, objExtendConfig) {
                         log.debug('EXTEND UTIL _getSalesOrderInfo:', '**ENTER**');
                         var objExtendData = {};
                         var objCustomerInfo = exports.getCustomerInfo(objSalesOrderRecord.getValue({ fieldId: 'entity' }));
@@ -306,14 +307,14 @@ define([
                                                 arrExtendItemData[stUniqueKey] = {};
                                         }
                                         arrExtendItemData[stUniqueKey] = exports.getItemLineDetails(objSalesOrderRecord, line, arrExtendItemData[line], stItemId, objExtendConfig);
-                                        
+
                                         if (arrExtendItemData[stUniqueKey].extend_line) {
                                                 arrExtendItemData[stUniqueKey].lineItemID = arrExtendItemData[stUniqueKey].lineItemID + "-" + arrExtendItemData[stUniqueKey].extend_line;
                                         }
                                 }
 
                         }
-                     //   const filtered = arrExtendItemData.filter(e => e);
+                        //   const filtered = arrExtendItemData.filter(e => e);
                         return arrExtendItemData;
                 };
 
@@ -631,8 +632,8 @@ define([
                         var objCustomerInfo = {
                                 "email": objCustomerRecord.getValue({ fieldId: 'email' }),
                                 "phone": objCustomerRecord.getValue({ fieldId: 'phone' }),
-                                "billingAddress": exports.getAddress(objCustomerRecord, 'shippingaddress'),
-                                "shippingAddress": exports.getAddress(objCustomerRecord, 'billingaddress'),
+                                // "billingAddress": exports.getAddress(objCustomerRecord, 'shippingaddress'),
+                                // "shippingAddress": exports.getAddress(objCustomerRecord, 'billingaddress'),
                         }
                         return objCustomerInfo;
                 };
