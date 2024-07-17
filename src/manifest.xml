@@ -21,6 +21,22 @@
       <feature required="false">OPPORTUNITIES</feature>
       <feature required="false">ACCOUNTING</feature>
       <feature required="false">WORKORDERS</feature>
+      <feature required="false">CRM</feature>
+      <feature required="false">CUSTOMSEGMENTS</feature>
+      <feature required="false">CREATESUITEBUNDLES</feature>
     </features>
+    <objects>
+      <object>customrecord_ext_configuration.val_1730589_5517624_sb1_571</object>
+      <object>customsearch1900</object>
+    </objects>
+    <files>
+      <file>/SuiteScripts/ExtendSDK/mapreduce/customscript_ext_refund_contract_mr.js</file>
+      <file>/SuiteScripts/ExtendSDK/mapreduce/customscript_ext_upsert_order.js</file>
+      <file>/SuiteScripts/ExtendSDK/suitelet/customscript_ext_offer_modal_sl.js</file>
+      <file>/SuiteScripts/ExtendSDK/userevent/customscript_ext_offer_modal_ue.js</file>
+      <file>/SuiteScripts/ExtendSDK/suitelet/customscript_ext_sp_offer_modal_sl.js</file>
+      <file>/SuiteScripts/ExtendSDK/userevent/customscript_ext_sp_offer_modal_ue.js</file>
+      <file>/SuiteScripts/ExtendSDK/client/customscript_ext_sp_offer_modal_controller.js</file>
+    </files>
   </dependencies>
 </manifest>
