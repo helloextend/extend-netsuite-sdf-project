@@ -66,7 +66,8 @@ define([
                 });
                 var intPrice = parseInt(objCurrentRecord.getSublistValue({
                     sublistId: stSublistId,
-                    fieldId: 'rate'
+                    fieldId: 'rate',
+                    line: i
                 }) * 100);
                 if (!intPrice || intPrice == 0) {
                     intPrice = parseInt(((objCurrentRecord.getSublistValue({ sublistId: stSublistId, fieldId: 'amount', line: i }) / intQty).toFixed(2)) * 100);

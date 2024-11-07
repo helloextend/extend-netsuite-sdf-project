@@ -51,6 +51,7 @@ function (runtime, search) {
                                     search.createColumn({ name: "custrecord_ext_category", label: "Category ID" }),
                                     search.createColumn({ name: "custrecord_ext_pp_item", label: "Product Protection Item" }),
                                     search.createColumn({ name: "custrecord_ext_sp_item", label: "Shipping Protection Item" }),
+                                    search.createColumn({ name: "custrecord_ext_client_id", label: "client_id" }),
 
                             ]
                 });
