@@ -83,9 +83,23 @@ define([
             }) * 100);
             var stItemRefId = EXTEND_UTIL.getItemRefId(stItemId, objExtendConfig);
             var stItemCategory = EXTEND_UTIL.getItemCategory(stItemId, objExtendConfig);
+
+            var objItem = {};
+            objItem.id = stItemId;
+            objItem.name = stItemName;
+            objItem.qty = intQty;
+            objItem.line = stLineNum;
+            objItem.refId = stItemRefId;
+            objItem.price = intPrice;
+            objItem.category = stItemCategory;
+            //console.log('objItem', objItem);
+            //push to array
+            arrItemList.push(objItem);
+            arrItemList = JSON.stringify(arrItemList);
+            console.log('arrItemList', arrItemList);
  
             //call offers endpoint to see if product is warrantable
-            var objResponse = EXTEND_API.getOffers(stItemRefId, objExtendConfig);
+            var objResponse = EXTEND_API.getOffers(objItem, objExtendConfig);
             var arrPlans = [];
             if (objResponse.code == 200) {
                 var objResponseBody = JSON.parse(objResponse.body);
@@ -101,20 +115,6 @@ define([
             if (arrPlans.length == 0) {
                 return true;
             }
-
-            var objItem = {};
-            objItem.id = stItemId;
-            objItem.name = stItemName;
-            objItem.qty = intQty;
-            objItem.line = stLineNum;
-            objItem.refId = stItemRefId;
-            objItem.price = intPrice;
-            objItem.category = stItemCategory;
-            //console.log('objItem', objItem);
-            //push to array
-            arrItemList.push(objItem);
-            arrItemList = JSON.stringify(arrItemList);
-            console.log('arrItemList', arrItemList);
 
             _callSuitelet(arrItemList, stItemId, stItemName, stLineNum, intQty, stItemRefId, intPrice, stItemCategory, stExtendConfigRecId);
 

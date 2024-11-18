@@ -119,9 +119,19 @@ define([
                  * API Documentation: https://docs.extend.com/reference/getoffer
                  */
                 exports.getOffers = function (objItem, config) {
+                        let productId;
+                        
                         // var config = extendConfig.getConfig();
                         try {
-                           var stUrl = config.domain + '/offers?storeId=' + config.storeId + '&productId=' + objItem.id
+
+                        if(objItem.refId){
+                                productId = objItem.refId;
+                        } else {
+                                productId = objItem.id;
+                        }
+
+                        var stUrl = config.domain + '/offers?storeId=' + config.storeId + '&productId=' + productId
+
                         if(objItem.category){
                           log.debug('objItem.category', objItem.category);
 
@@ -131,7 +141,7 @@ define([
 
                                 stUrl+= '&dynamicPricing=true&price=' + objItem.price;
                         } 
-log.debug('url', stUrl);
+                                log.debug('url', stUrl);
                             var response = https.get({
                                     url: stUrl,
                                         headers: {
