@@ -7,7 +7,7 @@
  *@copyright Extend, Inc
  *@author Michael Draper
  *
- *@NApiVersion 2.1
+ *@NApiVersion 2.x
  *@NScriptType MapReduceScript
  *@ModuleScope Public
  */
@@ -15,8 +15,8 @@ define([
             'N/runtime',
             'N/record',
             'N/search',
-            '../lib/customscript_ext_util',
-            '../lib/customscript_ext_config_lib'
+            '../lib/customscript_ext_util.js',
+            '../lib/customscript_ext_config_lib.js'
 
     ],
     function (runtime, record, search, EXTEND_UTIL, EXTEND_CONFIG) {

@@ -15,7 +15,7 @@ var logic_react_lib = {
         ].join("\n")
     },
     getComponentScript : function (componentName, tagName , file) {
-  switch (componentName) {
+        switch (componentName) {
             case 'PartFinder':
                 return [
                     '',

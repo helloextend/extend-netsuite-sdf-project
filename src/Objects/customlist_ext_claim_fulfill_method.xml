@@ -1,0 +1,20 @@
+<customlist scriptid="customlist_ext_claim_fulfill_method">
+  <description></description>
+  <isinactive>F</isinactive>
+  <isordered>T</isordered>
+  <name>Extend Claim Fulfill Method</name>
+  <customvalues>
+    <customvalue scriptid="val_1764199_5517624_sb1_952">
+      <isinactive>F</isinactive>
+      <value>Replacement Order</value>
+    </customvalue>
+    <customvalue scriptid="val_1764200_5517624_sb1_271">
+      <isinactive>F</isinactive>
+      <value>Refund</value>
+    </customvalue>
+    <customvalue scriptid="val_1764238_5517624_sb1_624">
+      <isinactive>F</isinactive>
+      <value>Credit</value>
+    </customvalue>
+  </customvalues>
+</customlist>

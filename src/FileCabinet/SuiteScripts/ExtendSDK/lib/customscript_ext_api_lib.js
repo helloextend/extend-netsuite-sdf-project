@@ -3,472 +3,516 @@
  * Houses calls to Extend API
  * @NApiVersion 2.1
  */
-define([
-        'N/https',
-],
+define(["N/https"], function (https) { //todo add additional extend API calls
+  var exports = {};
+  /*****************************************TOKEN*****************************************/
+  exports.getToken = function (config) {
+    try {
+      var response = https.post({
+        url: config.domain + "/auth/oauth/token",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json;version=" + config.version,
+        },
+        body: JSON.stringify({
+          grant_type: "client_credentials",
+          client_id: config.client_id,
+          client_secret: config.client_secret,
+          client_assertion:
+            "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
+        }),
+      });
+      if (response) {
+        var body = JSON.parse(response.body);
+        var token = body["access_token"];
+        return token;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e));
+      return false;
+    }
+  };
 
-        //todo add additional extend API calls
-        function (https) {
+  /*****************************************PRODUCTS*****************************************/
+  /**
+   * CREATE PRODUCTS
+   * API Documentation: https://docs.extend.com/reference/storesproductscreate-1
+   */
+  exports.createProduct = function (arrProducts, bIsBatch, bIsUpsert, config) {
+    // var config = extendConfig.getConfig();
+    try {
+      var response = https.post({
+        url:
+          config.domain +
+          "/stores/" +
+          config.storeId +
+          "/products?upsert=" +
+          bIsUpsert +
+          "?batch=" +
+          bIsBatch,
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+        },
+        body: JSON.stringify(arrProducts),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e));
+      return false;
+    }
+  };
+  /**
+   * UPDATE PRODUCT
+   * API Documentation: https://developers.extend.com/default#tag/Products/paths/~1stores~1{storeId}~1products~1{productId}/put
+   */
+  exports.updateProduct = function (objProductDetails, stItemId, config) {
+    // log.debug('Extend Product Details', objProductDetails);
+    // var config = extendConfig.getConfig();
+    try {
+      var response = https.put({
+        url:
+          config.domain + "/stores/" + config.storeId + "/products/" + stItemId,
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+        },
+        body: JSON.stringify(objProductDetails),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e));
+      return false;
+    }
+  };
+  /**
+   * GET PRODUCT
+   * API Documentation: https://docs.extend.com/reference/storesproductsget-1
+   */
+  exports.getProduct = function (stItemId, config) {
+    //var config = extendConfig.getConfig();
+    try {
+      var response = https.get({
+        url:
+          config.domain + "/stores/" + config.storeId + "/products/" + stItemId,
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+        },
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
+  /**
+   * DELETE PRODUCT
+   * API Documentation: https://docs.extend.com/reference/storesproductsdelete-1
+   */
+  exports.deleteProduct = function (stItemId, config) {
+    //var config = extendConfig.getConfig();
+    try {
+      var response = https.get({
+        url:
+          config.domain + "/stores/" + config.storeId + "/products/" + stItemId,
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+        },
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
 
-                var exports = {};
+  /*****************************************OFFERS*****************************************/
+  /**
+   * GET OFFERS
+   * API Documentation: https://docs.extend.com/reference/getoffer
+   */
+  exports.getOffers = function (objItem, config) {
+    log.debug("objItem:::: ", objItem);
 
+    var productId;
+    // var config = extendConfig.getConfig();
+    try {
+      if (objItem.refId) {
+        productId = objItem.refId;
+      } else {
+        productId = objItem.id;
+      }
 
-                /*****************************************PRODUCTS*****************************************/
-                /**
-                 * CREATE PRODUCTS
-                 * API Documentation: https://docs.extend.com/reference/storesproductscreate-1
-                 */
-                exports.createProduct = function (arrProducts, bIsBatch, bIsUpsert, config) {
-                        // var config = extendConfig.getConfig();
-                        try {
-                                var response = https.post({
-                                        url: config.domain + '/stores/' + config.storeId + '/products?upsert=' + bIsUpsert + '?batch=' + bIsBatch,
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version
-                                        },
-                                        body: JSON.stringify(arrProducts),
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e));
-                                return false;
-                        }
-                };
-                /**
-                 * UPDATE PRODUCT
-                 * API Documentation: https://developers.extend.com/default#tag/Products/paths/~1stores~1{storeId}~1products~1{productId}/put
-                 */
-                exports.updateProduct = function (objProductDetails, stItemId, config) {
-                        // log.debug('Extend Product Details', objProductDetails);
-                        // var config = extendConfig.getConfig();
-                        try {
-                                var response = https.put({
-                                        url: config.domain + '/stores/' + config.storeId + '/products/' + stItemId,
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version
-                                        },
-                                        body: JSON.stringify(objProductDetails),
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e));
-                                return false;
-                        }
-                };
-                /**
-                 * GET PRODUCT
-                 * API Documentation: https://docs.extend.com/reference/storesproductsget-1
-                 */
-                exports.getProduct = function (stItemId, config) {
-                        //var config = extendConfig.getConfig();
-                        try {
-                                var response = https.get({
-                                        url: config.domain + '/stores/' + config.storeId + '/products/' + stItemId,
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version
-                                        },
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
-                /**
-                 * DELETE PRODUCT
-                 * API Documentation: https://docs.extend.com/reference/storesproductsdelete-1
-                 */
-                exports.deleteProduct = function (stItemId, config) {
-                        //var config = extendConfig.getConfig();
-                        try {
-                                var response = https.get({
-                                        url: config.domain + '/stores/' + config.storeId + '/products/' + stItemId,
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version
-                                        },
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
+      var stUrl =
+        config.domain +
+        "/offers?storeId=" +
+        config.storeId +
+        "&productId=" +
+        productId;
+      if (objItem.category) {
+        log.debug("objItem.category", objItem.category);
 
+        stUrl += "&category=" + objItem.category;
+      }
+      if (objItem.price) {
+        log.debug("objItem.price", objItem.price);
 
+        stUrl += "&dynamicPricing=true&price=" + objItem.price;
+      }
+      log.debug("url", stUrl);
+      var response = https.get({
+        url: stUrl,
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+        },
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
 
+  /*****************************************SHIPPING OFFERS*****************************************/
+  /**
+   * GET SHIPPING OFFER
+   * API Documentation:  https://docs.extend.com/reference/shippingoffersquotecreate
+   */
+  exports.getSPOffers = function (objSPDetails, config) {
+    // var config = extendConfig.getConfig();
+    log.debug("objSPDetails",objSPDetails)
 
-                /*****************************************OFFERS*****************************************/
-                /**
-                 * GET OFFERS
-                 * API Documentation: https://docs.extend.com/reference/getoffer
-                 */
-                exports.getOffers = function (objItem, config) {
-                        let productId;
-                        
-                        // var config = extendConfig.getConfig();
-                        try {
+    var bodyObj = {};
+    bodyObj["items"] = objSPDetails;
+    bodyObj["storeId"] = config.storeId;
+    bodyObj["currency"] = "USD";
 
-                        if(objItem.refId){
-                                productId = objItem.refId;
-                        } else {
-                                productId = objItem.id;
-                        }
+    try {
+      var response = https.post({
+        url: config.domain + "/shipping-offers/quotes",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+        },
+        body: JSON.stringify(bodyObj),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
+  /**
+   * GET SHIPPING MARKETING
+   * API Documentation:  https://docs.extend.com/reference/shippingoffersmarketingget
+   */
+  exports.getSPMarketing = function (config) {
+    // var config = extendConfig.getConfig();
+    try {
+      var response = https.get({
+        url:
+          config.domain +
+          "/shipping-offers/config/marketing" +
+          "?storeId=" +
+          config.storeId,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json;version=" + config.version,
+        },
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
+  /**
+   * GET SHIPPING CONFIG
+   * API Documentation:  https://docs.extend.com/reference/shippingoffersconfigget
+   */
+  exports.getSPConfig = function (config) {
+    // var config = extendConfig.getConfig();
+    try {
+      var response = https.get({
+        url:
+          config.domain +
+          "/shipping-offers/config" +
+          "?storeId=" +
+          config.storeId,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json;version=" + config.version,
+        },
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
 
-                        var stUrl = config.domain + '/offers?storeId=' + config.storeId + '&productId=' + productId
+  /*****************************************LEADS*****************************************/
+  /**
+   * CREATE LEAD
+   * API Documentation:  https://developers.helloextend.com/2020-08-01#tag/Leads/paths/~1stores~1{storeId}~1leads/post
+   */
+  exports.createLead = function (objLeadDetails, config) {
+    // var config = extendConfig.getConfig();
+    try {
+      var response = https.post({
+        url: config.domain + "/stores/" + config.storeId + "/leads",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+        },
+        body: JSON.stringify(objLeadDetails),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
+  /**
+   * GET LEAD OFFERS
+   * API Documentation:  https://docs.extend.com/reference/contractsleadofferget
+   */
+  exports.getLeadOffers = function (objLeadDetails, config) {
+    //var config = extendConfig.getConfig();
+    try {
+      var response = https.get({
+        url: config.domain + "/leads/" + config.storeId + "/offers",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+        },
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
 
-                        if(objItem.category){
-                          log.debug('objItem.category', objItem.category);
+  /*****************************************ORDERS*****************************************/
+  /**
+   * UPSERT ORDER
+   * API Documentation: https://docs.extend.com/reference/ordersupsert
+   */
+  exports.upsertOrder = function (objOrderDetails, config) {
+//     var config = extendConfig.getConfig();
 
-                                stUrl+= '&category=' + objItem.category;
-                        }if(objItem.price){
-                          log.debug('objItem.price', objItem.price);
+    try {
+      var response = https.put({
+        url: config.domain + "/orders",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+          "X-Idempotency-Key": exports.generateUUID(),
+        },
+        body: JSON.stringify(objOrderDetails),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
+  /**
+   * CREATE ORDER
+   * API Documentation: https://docs.extend.com/reference/orderscreate
+   */
+  exports.createOrder = function (objOrderDetails, config) {
+    // var config = extendConfig.getConfig();
 
-                                stUrl+= '&dynamicPricing=true&price=' + objItem.price;
-                        } 
-                                log.debug('url', stUrl);
-                            var response = https.get({
-                                    url: stUrl,
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version
-                                        },
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
+    try {
+      var response = https.post({
+        url: config.domain + "/orders",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+          "X-Idempotency-Key": exports.generateUUID(),
+        },
+        body: JSON.stringify(objOrderDetails),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
+  /**
+   * UPDATE ORDER LINE FULFILLMENT
+   * API Documentation: https://docs.extend.com/reference/lineitemsfulfill
+   */
+  exports.fulfillOrderLine = function (objOrderDetails, config) {
+    // var config = extendConfig.getConfig();
+    try {
+      var guid = exports.generateUUID();
+      log.debug("guid", guid);
 
+      var response = https.post({
+        url: config.domain + "/line-items/fulfill",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+          "X-Idempotency-Key": exports.generateUUID(),
+        },
+        body: JSON.stringify(objOrderDetails),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
 
+  /***************************************REFUNDS**********************************************/
+  /**
+   * REFUND CONTRACT
+   * API Documentation: https://docs.extend.com/reference/refundscreate
+   */
+  exports.refundContract = function (objRefundDetails, config) {
+    //  var config = extendConfig.getConfig();
 
+    log.debug(
+      "requestRefund",
+      "objRefundDetails - " + JSON.stringify(objRefundDetails)
+    );
 
-                /*****************************************SHIPPING OFFERS*****************************************/
-                /**
-                 * GET SHIPPING OFFER
-                 * API Documentation:  https://docs.extend.com/reference/shippingoffersquotecreate
-                 */
-                exports.getSPOffers = function (objSPDetails, config) {
-                        // var config = extendConfig.getConfig();
-                        try {
-                                var response = https.post({
-                                        url: config.domain + '/shipping-offers/quotes',
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version
-                                        },
-                                        body: JSON.stringify(objSPDetails),
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
-                /**
-                * GET SHIPPING MARKETING
-                * API Documentation:  https://docs.extend.com/reference/shippingoffersmarketingget 
-                */
-                exports.getSPMarketing = function (config) {
-                        // var config = extendConfig.getConfig();
-                        try {
-                                var response = https.get({
-                                        url: config.domain + '/shipping-offers/config/marketing' + '?storeId=' + config.storeId,
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'Accept': 'application/json;version=' + config.version
-                                        }
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
-                /**
-                * GET SHIPPING CONFIG
-                * API Documentation:  https://docs.extend.com/reference/shippingoffersconfigget 
-                */
-                exports.getSPConfig = function (config) {
-                        // var config = extendConfig.getConfig();
-                        try {
-                                var response = https.get({
-                                        url: config.domain + '/shipping-offers/config' + '?storeId=' + config.storeId,
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'Accept': 'application/json;version=' + config.version
-                                        }
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
+    try {
+      var response = https.post({
+        url: config.domain + "/refunds",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+        },
+        body: JSON.stringify(objRefundDetails),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
+  /**
+   * GET REFUND QUOTE
+   * API Documentation: https://docs.extend.com/reference/refundsget
+   */
+  exports.getRefundQuote = function (objRefundDetails, config) {
+    // var config = extendConfig.getConfig();
+    try {
+      var response = https.get({
+        url: config.domain + "/refunds",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+        },
+        body: JSON.stringify(objRefundDetails),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
+  /**
+   * REQUEST REFUND
+   * API Documentation: https://docs.extend.com/reference/refundscreate
+   */
+  exports.requestRefund = function (objRefundDetails, config) {
+    // var config = extendConfig.getConfig();
+    try {
+      var response = https.post({
+        url: config.domain + "/refunds",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Extend-Access-Token": config.key,
+          Accept: "application/json;version=" + config.version,
+        },
+        body: JSON.stringify(objRefundDetails),
+      });
+      if (response) {
+        return response;
+      }
+    } catch (e) {
+      log.debug("Error Calling API", JSON.stringify(e.message));
+      return;
+    }
+  };
 
+  /************************************SUPPORT FUNCTIONS****************************/
+  exports.generateUUID = function () {
+    var d = new Date().getTime(); //Timestamp
+    var d2 =
+      (typeof performance !== "undefined" &&
+        performance.now &&
+        performance.now() * 1000) ||
+      0; //Time in microseconds since page-load or 0 if unsupported
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+      /[xy]/g,
+      function (c) {
+        var r = Math.random() * 16; //random number between 0 and 16
+        if (d > 0) {
+          //Use timestamp until depleted
+          r = (d + r) % 16 | 0;
+          d = Math.floor(d / 16);
+        } else {
+          //Use microseconds since page-load if supported
+          r = (d2 + r) % 16 | 0;
+          d2 = Math.floor(d2 / 16);
+        }
+        return (c === "x" ? r : (r & 0x3) | 0x8).toString(16);
+      }
+    );
+  };
 
-
-
-                /*****************************************LEADS*****************************************/
-                /**
-                 * CREATE LEAD
-                 * API Documentation:  https://developers.helloextend.com/2020-08-01#tag/Leads/paths/~1stores~1{storeId}~1leads/post
-                 */
-                exports.createLead = function (objLeadDetails, config) {
-                        // var config = extendConfig.getConfig();
-                        try {
-                                var response = https.post({
-                                        url: config.domain + '/stores/' + config.storeId + '/leads',
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version
-                                        },
-                                        body: JSON.stringify(objLeadDetails),
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
-                /**
-                 * GET LEAD OFFERS
-                 * API Documentation:  https://docs.extend.com/reference/contractsleadofferget
-                 */
-                exports.getLeadOffers = function (objLeadDetails, config) {
-                        //var config = extendConfig.getConfig();
-                        try {
-                                var response = https.get({
-                                        url: config.domain + '/leads/' + config.storeId + '/offers',
-                                        headers: {
-                                                Accept: 'application/json',
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version
-                                        },
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
-
-
-
-
-                /*****************************************ORDERS*****************************************/
-                /**
-                 * UPSERT ORDER
-                 * API Documentation: https://docs.extend.com/reference/ordersupsert
-                 */
-                exports.upsertOrder = function (objOrderDetails, config) {
-                        // var config = extendConfig.getConfig();
-
-                        try {
-                                var response = https.put({
-                                        url: config.domain + '/orders',
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version,
-                                                'X-Idempotency-Key': exports.generateUUID()
-                                        },
-                                        body: JSON.stringify(objOrderDetails),
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
-                /**
-                 * CREATE ORDER
-                 * API Documentation: https://docs.extend.com/reference/orderscreate
-                 */
-                exports.createOrder = function (objOrderDetails, config) {
-                        // var config = extendConfig.getConfig();
-
-                        try {
-                                var response = https.post({
-                                        url: config.domain + '/orders',
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version,
-                                                'X-Idempotency-Key': exports.generateUUID()
-                                        },
-                                        body: JSON.stringify(objOrderDetails),
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
-                /**
-                 * UPDATE ORDER LINE FULFILLMENT
-                 * API Documentation: https://docs.extend.com/reference/lineitemsfulfill
-                 */
-                exports.fulfillOrderLine = function (objOrderDetails, config) {
-                        // var config = extendConfig.getConfig();
-                        try {
-                                var guid = exports.generateUUID();
-                                log.debug('guid', guid);
-
-                                var response = https.post({
-                                        url: config.domain + '/line-items/fulfill',
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version,
-                                                'X-Idempotency-Key': exports.generateUUID()
-                                        },
-                                        body: JSON.stringify(objOrderDetails),
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
-
-
-
-
-                /***************************************REFUNDS**********************************************/
-                /**
-                 * REFUND CONTRACT
-                 * API Documentation: https://docs.extend.com/reference/refundscreate
-                 */
-                exports.refundContract = function (objRefundDetails, config) {
-                        //  var config = extendConfig.getConfig();
-
-                        log.debug('requestRefund', "objRefundDetails - " + JSON.stringify(objRefundDetails))
-
-                        try {
-                                var response = https.post({
-                                        url: config.domain + '/refunds',
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version
-                                        },
-                                        body: JSON.stringify(objRefundDetails),
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
-                /**
-                 * GET REFUND QUOTE
-                 * API Documentation: https://docs.extend.com/reference/refundsget
-                 */
-                exports.getRefundQuote = function (objRefundDetails, config) {
-                        // var config = extendConfig.getConfig();
-                        try {
-                                var response = https.get({
-                                        url: config.domain + '/refunds',
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version
-                                        },
-                                        body: JSON.stringify(objRefundDetails),
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
-                /**
-                 * REQUEST REFUND
-                 * API Documentation: https://docs.extend.com/reference/refundscreate
-                 */
-                exports.requestRefund = function (objRefundDetails, config) {
-                        // var config = extendConfig.getConfig();
-                        try {
-                                var response = https.post({
-                                        url: config.domain + '/refunds',
-                                        headers: {
-                                                'Content-Type': 'application/json',
-                                                'X-Extend-Access-Token': config.key,
-                                                'Accept': 'application/json;version=' + config.version
-                                        },
-                                        body: JSON.stringify(objRefundDetails),
-                                });
-                                if (response) {
-                                        return response;
-                                }
-                        } catch (e) {
-                                log.debug('Error Calling API', JSON.stringify(e.message));
-                                return;
-                        }
-                };
-
-
-
-                
-                /************************************SUPPORT FUNCTIONS****************************/
-                exports.generateUUID = function () {
-                        var d = new Date().getTime();//Timestamp
-                        var d2 = ((typeof performance !== 'undefined') && performance.now && (performance.now() * 1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
-                        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-                                var r = Math.random() * 16;//random number between 0 and 16
-                                if (d > 0) {//Use timestamp until depleted
-                                        r = (d + r) % 16 | 0;
-                                        d = Math.floor(d / 16);
-                                } else {//Use microseconds since page-load if supported
-                                        r = (d2 + r) % 16 | 0;
-                                        d2 = Math.floor(d2 / 16);
-                                }
-                                return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
-                        });
-                }
-
-                return exports;
-        });
+  return exports;
+});
